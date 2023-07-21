@@ -47,9 +47,8 @@ body {
   text-align: center;
 }
 #controls {
-  padding: 50px 50px 0px 50px;
-
-  outline: yellow 1px solid;
+  padding: 25px 25px 0px 25px;
+  /* outline: yellow 1px solid; */
 }
 #score {
   font-size: 30px;
@@ -61,6 +60,7 @@ body {
 }
 #card {
   display: inline-block;
+  padding-top: 10px;
 }
 .leftcolumn {
   float: left;
@@ -69,7 +69,9 @@ body {
 .rightcolumn {
   float: none;
 }
-
+#slidecontainer{
+  padding-top: 25px;
+}
 /* Responsive layout - when the screen is less than 800px wide, make the two columns stack on top of each other instead of next to each other */
 @media screen and (max-width: 800px) {
   .leftcolumn,

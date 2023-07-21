@@ -16,6 +16,7 @@ var boardColor = 'rgb(26 24 26)'
 var board
 /** @type {CanvasRenderingContext2D} */
 var context
+// /**  @type {box} */
 let switchOnOff
 let score = 0
 let scoreBoard
@@ -63,6 +64,10 @@ let arrowLeft = new Path2D()
 let arrowDown = new Path2D()
 let arrowUp = new Path2D()
 let arrowRight = new Path2D()
+
+let slider
+let myInterval
+
 window.onload = function () {
   // Set board height and width
   board = document.getElementById('board')
@@ -90,6 +95,9 @@ window.onload = function () {
   switchOnOff = document.getElementById('cboxSwitch')
   scoreBoard = document.getElementById('score')
 
+  slider = document.getElementById("speed");
+  slider.addEventListener("input",changeSpeed)
+
   /** Creates the session and load the model to inference */
   async function createSession () {
     try {
@@ -101,7 +109,7 @@ window.onload = function () {
   }
   drawControls()
   createSession()
-  setInterval(update, gameSpeed)
+  myInterval = setInterval(update, gameSpeed)
   reset()
 }
 
@@ -241,7 +249,7 @@ async function agent () {
 function reset () {
   console.log('Reseting')
   currDirection = { x: 0, y: 0 } //auto restart
-  // currDirection = directions.right
+  currDirection = directions.up
   head = { x: blockSize * 2, y: blockSize * 2 }
   snakeBody = [
     [head.x, head.y],
@@ -256,7 +264,8 @@ function reset () {
   drawSnakeBody()
   gameOver = false
   score = 0
-  // scoreBoard.innerHTML = 'Score: ' + score
+  scoreBoard.innerHTML = 'Score: ' + score
+  gameSpeed = slider.value
 }
 
 function update () {
@@ -264,7 +273,7 @@ function update () {
     console.log('    Updating')
 
     if (gameOver) {
-      alert('Game Over')
+      // alert('Game Over')
       reset()
       return
     }
@@ -288,7 +297,7 @@ function update () {
     if (head.x == food.x && head.y == food.y) {
       //It´s eating food
       score += 1
-      // scoreBoard.innerHTML = 'Score: ' + score
+      scoreBoard.innerHTML = 'Score: ' + score
       if (boardSize > snakeBody.length) {
         food_eated.unshift(-1)
         newFoodPosition()
@@ -326,10 +335,13 @@ function update () {
       }
     }
 
-    // if (switchOnOff.checked) {
-    // Computes next move
-    agent()
-    // }
+    if (switchOnOff.checked) {
+      // Computes next move
+      // alert("SI IA")
+      agent()
+    }else{
+      // alert("NO IA")
+    }
   }
 }
 
@@ -826,4 +838,14 @@ function resetArrows () {
   contextControls.stroke(arrowDown)
   contextControls.stroke(arrowLeft)
   contextControls.stroke(arrowRight)
+}
+
+function changeSpeed(e) {
+
+  gameSpeed =1000/ e.target.value;
+  console.log("speed", this.value)
+  clearInterval(myInterval);
+  // liberar nuestro inervalId de la variable
+  // myInterval = null;
+  myInterval = setInterval(update, gameSpeed)
 }
