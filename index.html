@@ -7,25 +7,36 @@
   <title>AI Snake</title>
   <link rel="stylesheet" href="styles/style.css">
   <link rel="stylesheet" href="styles/switch.css">
+  <link rel="icon" type="image/x-icon" href="/images/favicon.jpg">
   <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
 </head>
 
 <body>
   <!-- <div class="geeks">AI assisted Snake</div> -->
-  <!-- <div id="header">
-    <span id="score">Score: 0</span> 
-    <label class="switch">
-      <input type="checkbox" id="cboxSwitch" checked>
-      <span class="slider round"></span>
-    </label>
-    help
-  </div> -->
 
 
-  <canvas id="board"></canvas>
+  <div class="leftcolumn">
+    <canvas id="board"></canvas>
+  </div>
 
-<canvas id="controls"></canvas>
-  
+  <div class="rightcolumn">
+    <div id="card">
+      <div id="score">
+        Score: 0
+      </div>
+      <div id="help">
+        <label class="switch">
+          <input type="checkbox" id="cboxSwitch" checked>
+          <span class="slider round"></span>
+        </label>
+        AI
+      </div>
+      <div>
+        <canvas id="controls"></canvas>
+      </div>
+
+    </div>
+  </div>
   <script src="scripts/main.js"></script>
 
 </body>

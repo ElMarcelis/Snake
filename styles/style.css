@@ -27,31 +27,62 @@ li,h1 {
     font-size: 100px;
 } */
 
-
 .geeks {
-	text-align: center;
+  text-align: center;
   font-size: 40px;
-	font-weight: bold;
+  font-weight: bold;
   /* padding: 20px; */
   margin-bottom: 10px;
 }
-body{
+body {
   text-align: center;
   color: white;
   background-color: black;
 }
-#board{
+#board {
   outline: red 1px solid;
+  /* padding: 50px; */
 }
-#controls{
-  padding: 20px;
-  /* margin-top: 20px;
-  margin-left: 20px; */
-  /* outline: yellow 1px solid; */
+#footer {
+  text-align: center;
 }
-#header{
-  /* position: relative;
-  display: inline-block; */
-  font-size: 40px ;
+#controls {
+  padding: 50px 50px 0px 50px;
 
+  outline: yellow 1px solid;
+}
+#score {
+  font-size: 30px;
+  float: left;
+}
+#help {
+  font-size: 30px;
+  float: right;
+}
+#card {
+  display: inline-block;
+}
+.leftcolumn {
+  float: left;
+}
+
+.rightcolumn {
+  float: none;
+}
+
+/* Responsive layout - when the screen is less than 800px wide, make the two columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 800px) {
+  .leftcolumn,
+  .rightcolumn {
+    width: 100%;
+    padding: 0;
+  }
+}
+
+/* Responsive layout - when the screen is less than 400px wide, make the navigation links stack on top of each other instead of next to each other */
+@media screen and (max-width: 400px) {
+  .topnav a {
+    float: none;
+    width: 100%;
+  }
 }
