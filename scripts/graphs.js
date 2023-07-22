@@ -9,7 +9,7 @@ function newFoodPosition () {
       food.y = Math.floor(Math.random() * boardRows) * blockSize
   
       for (let i = 0; i < snakeBody.length; i++) {
-        if (food.x == snakeBody[i][0] && food.y == snakeBody[i][1]) {
+        if (food.x == snakeBody[i].x && food.y == snakeBody[i].y) {
           // food on snake body
           console.log('new food on body')
           newFoodPosition()
@@ -77,7 +77,7 @@ function newFoodPosition () {
       margin = (1 - size) / 2
       if (i > 0) {
         context.fillStyle = color
-        context.fillRect(snakeBody[i][0], snakeBody[i][1], blockSize, blockSize)
+        context.fillRect(snakeBody[i].x, snakeBody[i].y, blockSize, blockSize)
         color_circ =
           'rgb(' +
           (255 - variacion * (i + 1)) +
@@ -93,8 +93,8 @@ function newFoodPosition () {
           minMargin += 0.05
           context.fillStyle = 'rgb(253 83 21)'
           context.fillRect(
-            snakeBody[i][0] + blockSize * minMargin,
-            snakeBody[i][1] + blockSize * minMargin,
+            snakeBody[i].x + blockSize * minMargin,
+            snakeBody[i].y + blockSize * minMargin,
             blockSize * minSize,
             blockSize * minSize
           )
@@ -105,8 +105,8 @@ function newFoodPosition () {
   
           context.beginPath()
           context.arc(
-            snakeBody[i][0] + blockSize / 2,
-            snakeBody[i][1] + blockSize / 2,
+            snakeBody[i].x + blockSize / 2,
+            snakeBody[i].y + blockSize / 2,
             (blockSize * Math.max(size, minSize)) / 2,
             0,
             2 * Math.PI
@@ -118,8 +118,8 @@ function newFoodPosition () {
             context.fillStyle = 'white'
             context.beginPath()
             context.arc(
-              snakeBody[i][0] + blockSize / 3,
-              snakeBody[i][1] + blockSize / 3,
+              snakeBody[i].x + blockSize / 3,
+              snakeBody[i].y + blockSize / 3,
               blockSize / 5,
               0,
               2 * Math.PI
@@ -171,8 +171,8 @@ function newFoodPosition () {
         eyeCLightRY = 0.25 - aa * 0.9
         eyeCLightLX = 0.65 + aa * 0.9
         eyeCLightLY = 0.25 - aa * 0.9
-        neckX = snakeBody[0][0]
-        neckY = snakeBody[0][1] + blockSize / 2
+        neckX = snakeBody[0].x
+        neckY = snakeBody[0].y + blockSize / 2
         neckWidth = blockSize
         neckHeight = blockSize / 2
         break
@@ -186,8 +186,8 @@ function newFoodPosition () {
         eyeCLightRY = 0.65 - aa * 0.9
         eyeCLightLX = 0.25 - aa * 1.4
         eyeCLightLY = 0.65 - aa * 0.9
-        neckX = snakeBody[0][0]
-        neckY = snakeBody[0][1]
+        neckX = snakeBody[0].x
+        neckY = snakeBody[0].y
         neckWidth = blockSize
         neckHeight = blockSize / 2
         break
@@ -201,8 +201,8 @@ function newFoodPosition () {
         eyeCLightRY = 0.25 - aa * 1.4
         eyeCLightLX = 0.25 - aa * 0.9
         eyeCLightLY = 0.65 + aa * 0.9
-        neckX = snakeBody[0][0] + blockSize / 2
-        neckY = snakeBody[0][1]
+        neckX = snakeBody[0].x + blockSize / 2
+        neckY = snakeBody[0].y
         neckWidth = blockSize / 2
         neckHeight = blockSize
         break
@@ -216,8 +216,8 @@ function newFoodPosition () {
         eyeCLightRY = 0.65 + aa * 0.1
         eyeCLightLX = 0.65 - aa * 0.4
         eyeCLightLY = 0.25 - aa * 1.9
-        neckX = snakeBody[0][0]
-        neckY = snakeBody[0][1]
+        neckX = snakeBody[0].x
+        neckY = snakeBody[0].y
         neckWidth = blockSize / 2
         neckHeight = blockSize
         break
@@ -231,8 +231,8 @@ function newFoodPosition () {
         eyeCLightRY = 0.25 - aa * 0.9
         eyeCLightLX = 0.65 + aa * 0.9
         eyeCLightLY = 0.25 - aa * 0.9
-        neckX = snakeBody[0][0]
-        neckY = snakeBody[0][1] + blockSize / 2
+        neckX = snakeBody[0].x
+        neckY = snakeBody[0].y + blockSize / 2
         neckWidth = blockSize
         neckHeight = blockSize / 2
         break

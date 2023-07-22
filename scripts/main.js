@@ -41,12 +41,19 @@ let carrousel = [
 
 let currDirection = { x: 0, y: 0 }
 
-function Point (x, y) {
-  this.x = x
-  this.y = y
+class Point {
+  constructor (x, y) {
+    if (Array.isArray(x)) {
+      this.x = x[0]
+      this.y = x[1]
+    } else {
+      this.x = x
+      this.y = y
+    }
+  }
 }
 
-var snakeBody = []
+let snakeBody = []
 var gameOver = false
 let modelUrl = './models/model.onnx'
 let session = null
@@ -96,7 +103,6 @@ window.onload = function () {
   slider = document.getElementById('speed')
   slider.addEventListener('input', changeSpeed)
   speedValue = document.getElementById('speedValue')
- 
 
   /** Creates the session and load the model to inference */
   async function createSession () {
@@ -117,14 +123,15 @@ window.onload = function () {
 function reset () {
   console.log('Reseting')
   currDirection = { x: 0, y: 0 } //auto restart
-  // currDirection = directions.up
-  head = { x: blockSize * 2, y: blockSize * 2 }
-  snakeBody = [
-    [head.x, head.y],
-    [head.x, head.y + blockSize * 1],
-    [head.x, head.y + blockSize * 2],
-    [head.x, head.y + blockSize * 3]
-  ]
+// currDirection = directions.up
+head = { x: blockSize * 2, y: blockSize * 2 }
+snakeBody = [
+  new Point([head.x, head.y]),
+  new Point([head.x, head.y + blockSize * 1]),
+  new Point([head.x, head.y + blockSize * 2]),
+  new Point([head.x, head.y + blockSize * 3])
+]
+
   context.fillStyle = boardColor
   context.fillRect(0, 0, board.width, board.height)
   newFoodPosition()
@@ -162,7 +169,7 @@ function update () {
     head.x += currDirection.x * blockSize //updating Snake position in X coordinate.
     head.y += currDirection.y * blockSize //updating Snake position in Y coordinate.
 
-    snakeBody.unshift([head.x, head.y]) //moves the head to the next position
+    snakeBody.unshift(new Point([head.x, head.y])) //moves the head to the next position
     if (head.x == food.x && head.y == food.y) {
       //It´s eating food
       score += 1
@@ -195,7 +202,7 @@ function update () {
     }
     // Check if head is Snake eats own body
     for (let i = 1; i < snakeBody.length; i++) {
-      if (head.x == snakeBody[i][0] && head.y == snakeBody[i][1]) {
+      if (head.x == snakeBody[i].x && head.y == snakeBody[i].y) {
         // drawEyes()
         console.log('Game Over body')
         gameOver = true
@@ -217,23 +224,23 @@ function update () {
 /**Manual Movement of the Snake whit addEventListener*/
 function changeDirection (e) {
   console.log('Changing Direction')
-  if (e.code == 'ArrowUp' && snakeBody[1][1] != head.y - blockSize) {
+  if (e.code == 'ArrowUp' && snakeBody[1].y != head.y - blockSize) {
     // If up arrow key pressed with this condition...
     // snake will not move in the opposite direction
     // console.log('changeDirection UP')
     pressArrows(arrowUp)
     currDirection = directions.up
-  } else if (e.code == 'ArrowDown' && snakeBody[1][1] != head.y + blockSize) {
+  } else if (e.code == 'ArrowDown' && snakeBody[1].y != head.y + blockSize) {
     //If down arrow key pressed
     // console.log('changeDirection DOWN')
     pressArrows(arrowDown)
     currDirection = directions.down
-  } else if (e.code == 'ArrowLeft' && snakeBody[1][0] != head.x - blockSize) {
+  } else if (e.code == 'ArrowLeft' && snakeBody[1].x != head.x - blockSize) {
     //If left arrow key pressed
     // console.log('changeDirection LEFT')
     pressArrows(arrowLeft)
     currDirection = directions.left
-  } else if (e.code == 'ArrowRight' && snakeBody[1][0] != head.x + blockSize) {
+  } else if (e.code == 'ArrowRight' && snakeBody[1].x != head.x + blockSize) {
     //If Right arrow key pressed
     // console.log('changeDirection RIGHT')
     pressArrows(arrowRight)
@@ -261,7 +268,7 @@ function ButtonMousedown (e) {
       window.getComputedStyle(controls, null).getPropertyValue('padding-left')
     )
 
-  var keyCode={}
+  var keyCode = {}
 
   if (
     context.isPointInPath(buttonDown, coordX, coordY) ||

@@ -2,7 +2,7 @@
 //   a="";
 //   for (let index = 0; index < array.length; index++) {
 //     a += array[index];
-    
+
 //   }
 //   return a;
 // }
@@ -20,7 +20,6 @@
 //   console.log(colors[i])
 // }
 
-
 // colors.forEach(papo => console.log(papo , colors.indexOf(papo)))
 
 // var myCar = new Object();
@@ -36,14 +35,10 @@
 // myCar['year']  = 1969;
 // myCar.pepe = 'pepon';
 
-
-
 // console.log(myCar)
 
 // Se crean y asignan cuatro variables de una sola vez,
 // separadas por comas
-
-
 
 // var pepe = {
 //   a:1,
@@ -56,7 +51,6 @@
 // pupu.b = 20;
 // pupu.c = 30;
 
-
 // console.log(pepe, typeof(pepe), pepe.a);
 // console.log(pupu, typeof(pupu), pupu.a);
 
@@ -64,7 +58,6 @@
 
 // console.log(popo, typeof(popo));
 // // popo.prototype;
-
 
 // // Propiedades y método de encapsulación para Animal
 // var Animal = {
@@ -83,38 +76,67 @@
 // // fish.type = 'Fishes';
 // fish.displayType();    // Muestra: Fishes
 
-
 // console.log(animal1.[[Prototype]])
 
+// function displayCar() {
+//   var result = `Un hermoso ${this.year} ${this.make} ${this.model}`;
+//   result += `\nde ${this.owner.name}`;
+//   console.log(result);
+// }
 
-function displayCar() {
-  var result = `Un hermoso ${this.year} ${this.make} ${this.model}`;
-  result += `\nde ${this.owner.name}`;
-  console.log(result);
+// function Person(name, edad){
+//   this.name = name;
+//   this.edad = edad;
+// }
+
+// function Car(make="nada", model="vnado", year=1900, owner={}) {
+//   this.make = make;
+//   this.model = model;
+//   this.year = year;
+//   this.owner = owner;
+//   this.displayCar = displayCar;
+// }
+
+// carlos = new Person("carlitos", 32);
+
+// auto1 = new Car("ford", "fiesta", 1992, carlos);
+// auto1.nueva_prop = "caca"
+
+// console.log(auto1);
+// console.log(auto1.owner);
+// console.log(auto1.owner.name);
+// auto1.displayCar();
+
+// auto2 = new Car(year=299);
+// console.log(auto2)
+
+Array.prototype.subarray = function (start, end) {
+  if (!end) {
+    end = -1
+  }
+  return this.slice(start, this.length + 1 - end * -1)
+}
+const array1 = [[1, 2], 3]
+
+// console.log(array1.includes([1, 2]))
+// console.log(array1.includes(3))
+
+// console.log(array1.indexOf([1, 2]))
+// console.log(array1.indexOf(3))
+
+// console.log(array1.findIndex(a => a[0] == 1 && a[1] == 2))
+
+point = { x: 144, y: 216 }
+snakeBody = [
+  [216, 216],
+  [216, 144],
+  [144, 144],
+  [144, 216]
+]
+console.log(snakeBody.slice(-1))
+
+if ([point.x, point.y].toString() == snakeBody.slice(-1)[0].toString()) {
+  // is the tale
+  console.log([1, 0, 1])
 }
 
-function Person(name, edad){
-  this.name = name;
-  this.edad = edad;
-}
-
-function Car(make="nada", model="vnado", year=1900, owner={}) {
-  this.make = make;
-  this.model = model;
-  this.year = year;
-  this.owner = owner;
-  this.displayCar = displayCar;
-}
-
-carlos = new Person("carlitos", 32);
-
-auto1 = new Car("ford", "fiesta", 1992, carlos);
-auto1.nueva_prop = "caca"
-
-console.log(auto1);
-console.log(auto1.owner);
-console.log(auto1.owner.name);
-auto1.displayCar();
-
-auto2 = new Car(year=299);
-console.log(auto2)
