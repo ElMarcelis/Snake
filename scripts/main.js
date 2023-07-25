@@ -1,5 +1,17 @@
 // presionar una tecla marca las flechitas del pad
 
+
+class Point {
+  constructor (x, y) {
+    if (Array.isArray(x)) {
+      this.x = x[0]
+      this.y = x[1]
+    } else {
+      this.x = x
+      this.y = y
+    }
+  }
+}
 let blockSize = 100
 let gameSpeed = 1000 / 5
 
@@ -14,6 +26,7 @@ var board
 var context
 // /**  @type {box} */
 let switchOnOff
+let switchClass
 let score = 0
 let scoreBoard
 
@@ -21,9 +34,9 @@ let scoreBoard
 var contextControls
 /** @type {HTMLCanvasElement} */
 var controls
-let headColor = ''
-let head = { x: 0, y: 0 }
-let food = { x: 0, y: 0 }
+let neckColor = ''
+let head = new Point(0, 0)
+let food = new Point(0, 0)
 let food_eated = []
 let directions = {
   up: { x: 0, y: -1 },
@@ -41,17 +54,7 @@ let carrousel = [
 
 let currDirection = { x: 0, y: 0 }
 
-class Point {
-  constructor (x, y) {
-    if (Array.isArray(x)) {
-      this.x = x[0]
-      this.y = x[1]
-    } else {
-      this.x = x
-      this.y = y
-    }
-  }
-}
+
 
 let snakeBody = []
 var gameOver = false
@@ -68,8 +71,8 @@ let arrowDown = new Path2D()
 let arrowUp = new Path2D()
 let arrowRight = new Path2D()
 
-let slider
-let speedValue
+let sliderSpeed
+let speedValueText
 let myInterval
 
 window.onload = function () {
@@ -98,11 +101,12 @@ window.onload = function () {
   document.addEventListener('keyup', resetArrows)
 
   switchOnOff = document.getElementById('cboxSwitch')
+  switchClass = document.getElementsByClassName('slider')
+  switchClass.item(0).addEventListener('pointerout', toogleAIassistance)
   scoreBoard = document.getElementById('score')
-
-  slider = document.getElementById('speed')
-  slider.addEventListener('input', changeSpeed)
-  speedValue = document.getElementById('speedValue')
+  sliderSpeed = document.getElementById('speed')
+  sliderSpeed.addEventListener('input', changeSpeed)
+  speedValueText = document.getElementById('speedValue')
 
   /** Creates the session and load the model to inference */
   async function createSession () {
@@ -123,14 +127,15 @@ window.onload = function () {
 function reset () {
   console.log('Reseting')
   currDirection = { x: 0, y: 0 } //auto restart
-// currDirection = directions.up
-head = { x: blockSize * 2, y: blockSize * 2 }
-snakeBody = [
-  new Point([head.x, head.y]),
-  new Point([head.x, head.y + blockSize * 1]),
-  new Point([head.x, head.y + blockSize * 2]),
-  new Point([head.x, head.y + blockSize * 3])
-]
+  currDirection = directions.up
+  head.x=blockSize * 2
+  head.y =blockSize * 2
+  snakeBody = [
+    new Point([head.x, head.y]),
+    new Point([head.x, head.y + blockSize * 1]),
+    new Point([head.x, head.y + blockSize * 2]),
+    new Point([head.x, head.y + blockSize * 3])
+  ]
 
   context.fillStyle = boardColor
   context.fillRect(0, 0, board.width, board.height)
@@ -140,13 +145,13 @@ snakeBody = [
   gameOver = false
   score = 0
   scoreBoard.innerHTML = 'Score: ' + score
-  gameSpeed = 1000 / slider.value
-  speedValue.innerHTML = 'Speed: ' + slider.value
+  gameSpeed = 1000 / sliderSpeed.value
+  speedValueText.innerHTML = 'Speed: ' + sliderSpeed.value
 }
 
 function update () {
   if (currDirection.x != 0 || currDirection.y != 0) {
-    console.log('    Updating')
+    // console.log('    Updating')
 
     if (gameOver) {
       // alert('Game Over')
@@ -315,9 +320,20 @@ function changeSpeed (e) {
   // liberar nuestro inervalId de la variable
   // myInterval = null;
   myInterval = setInterval(update, gameSpeed)
-  speedValue.innerHTML = 'Speed: ' + this.value
+  speedValueText.innerHTML = 'Speed: ' + this.value
 }
 function pressArrows (arrow) {
   contextControls.strokeStyle = 'white'
   contextControls.stroke(arrow)
+}
+
+function toogleAIassistance (e) {
+  console.log('change swith')
+  a = document.querySelectorAll('.switch input').item(0) // and perhaps add chk.onchange() if needed
+  if (a.checked) {
+    a.checked = false
+  } else {
+    a.checked = true
+  }
+
 }
