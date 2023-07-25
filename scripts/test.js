@@ -135,8 +135,4 @@ snakeBody = [
 ]
 console.log(snakeBody.slice(-1))
 
-if ([point.x, point.y].toString() == snakeBody.slice(-1)[0].toString()) {
-  // is the tale
-  console.log([1, 0, 1])
-}
 
