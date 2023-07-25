@@ -227,17 +227,17 @@ function _count_blocks (point) {
   let col = 0
   if (pointInArray(snakeBody.slice(0, -1), point)) {
     // is in body
-    console.log('Is in body')
+    // console.log('Is in body')
     return [0, food_found, tale_found]
   }
 
   if (pointInArray(snakeBody.slice(-1), point)) {
     // is the tale
-    console.log('Is tale')
+    // console.log('Is tale')
     return [1, food_found, 1]
   }
   if (is_collision(point)) {
-    console.log('            not safe\n')
+    // console.log('            not safe\n')
     return [0, food_found, tale_found]
   }
 
@@ -310,7 +310,7 @@ function isSafe (row, col, visited) {
 }
 function pointInArray (arr, point) {
   if (arr.findIndex(p => p.x == point.x && p.y == point.y) > -1) {
-    console.log('Is in array')
+    // console.log('Is in array')
     return true
   } else {
     return false

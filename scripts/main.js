@@ -1,6 +1,5 @@
 // presionar una tecla marca las flechitas del pad
 
-
 class Point {
   constructor (x, y) {
     if (Array.isArray(x)) {
@@ -53,8 +52,6 @@ let carrousel = [
 ]
 
 let currDirection = { x: 0, y: 0 }
-
-
 
 let snakeBody = []
 var gameOver = false
@@ -117,6 +114,15 @@ window.onload = function () {
       document.write(`failed to createSession ONNX: ${e}.`)
     }
   }
+  // localStorage.removeItem("speed")
+  gameSpeedStorage = localStorage.getItem('speed')
+  if (gameSpeedStorage == null) {
+    localStorage.setItem('speed', parseInt(1000 / gameSpeed))
+  } else {
+    gameSpeed = 1000 / gameSpeedStorage
+  }
+  sliderSpeed.value = parseInt(1000 / gameSpeed)
+
   drawControls()
   createSession()
   myInterval = setInterval(update, gameSpeed)
@@ -127,9 +133,9 @@ window.onload = function () {
 function reset () {
   console.log('Reseting')
   currDirection = { x: 0, y: 0 } //auto restart
-  currDirection = directions.up
-  head.x=blockSize * 2
-  head.y =blockSize * 2
+  // currDirection = directions.up
+  head.x = blockSize * 2
+  head.y = blockSize * 2
   snakeBody = [
     new Point([head.x, head.y]),
     new Point([head.x, head.y + blockSize * 1]),
@@ -321,6 +327,7 @@ function changeSpeed (e) {
   // myInterval = null;
   myInterval = setInterval(update, gameSpeed)
   speedValueText.innerHTML = 'Speed: ' + this.value
+  localStorage.setItem('speed', parseInt(e.target.value))
 }
 function pressArrows (arrow) {
   contextControls.strokeStyle = 'white'
@@ -335,5 +342,4 @@ function toogleAIassistance (e) {
   } else {
     a.checked = true
   }
-
 }
