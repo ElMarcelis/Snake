@@ -1,5 +1,3 @@
-// presionar una tecla marca las flechitas del pad
-
 class Point {
   constructor (x, y) {
     if (Array.isArray(x)) {
@@ -23,12 +21,11 @@ var boardColor = 'rgb(26 24 26)'
 var board
 /** @type {CanvasRenderingContext2D} */
 var context
-// /**  @type {box} */
+/**  @type {box} */
 let switchOnOff
 let switchClass
 let score = 0
 let scoreBoard
-
 /** @type {CanvasRenderingContext2D} */
 var contextControls
 /** @type {HTMLCanvasElement} */
@@ -43,16 +40,13 @@ let directions = {
   left: { x: -1, y: 0 },
   right: { x: 1, y: 0 }
 }
-
 let carrousel = [
   directions.right,
   directions.down,
   directions.left,
   directions.up
 ]
-
 let currDirection = { x: 0, y: 0 }
-
 let snakeBody = []
 var gameOver = false
 let modelUrl = './models/model.onnx'
@@ -78,10 +72,8 @@ window.onload = function () {
   blockSize = Math.floor(
     (Math.min(window.innerHeight, window.innerWidth) / boardRows) * 0.98
   )
-  console.log(1, blockSize)
   blockSize -= blockSize % boardRows
-  console.log(2, blockSize)
-  board.height = blockSize * boardRows // boardRows * blockSize
+  board.height = blockSize * boardRows
   board.width = blockSize * boardRows
   console.log('board.height', board.height)
   context = board.getContext('2d')
@@ -99,7 +91,13 @@ window.onload = function () {
 
   switchOnOff = document.getElementById('cboxSwitch')
   switchClass = document.getElementsByClassName('slider')
-  switchClass.item(0).addEventListener('pointerout', toogleAIassistance)
+  // hasTouchscreen ?
+  if ('ontouchstart' in window) {
+    switchClass.item(0).addEventListener('click', function (evt) {
+      evt.preventDefault()
+    })
+    switchClass.item(0).addEventListener('pointerout', toogleAIassistance)
+  }
   scoreBoard = document.getElementById('score')
   sliderSpeed = document.getElementById('speed')
   sliderSpeed.addEventListener('input', changeSpeed)
@@ -129,13 +127,13 @@ window.onload = function () {
   reset()
 }
 
-/** Resets the game to de initial conditions */
+/** Resets the game to initial conditions */
 function reset () {
   console.log('Reseting')
   currDirection = { x: 0, y: 0 } //auto restart
   // currDirection = directions.up
-  head.x = blockSize * 2
-  head.y = blockSize * 2
+  head.x = blockSize * (boardCols / 2 -1)
+  head.y = blockSize * (boardRows -4)  
   snakeBody = [
     new Point([head.x, head.y]),
     new Point([head.x, head.y + blockSize * 1]),
@@ -160,7 +158,7 @@ function update () {
     // console.log('    Updating')
 
     if (gameOver) {
-      // alert('Game Over')
+      alert('Game Over')
       reset()
       return
     }
@@ -217,17 +215,15 @@ function update () {
         // drawEyes()
         console.log('Game Over body')
         gameOver = true
-        drawSnakeHead()
+        // drawSnakeHead()
         return
       }
     }
 
     if (switchOnOff.checked) {
-      // Computes next move
-      // alert("SI IA")
+      // AI next move
       agent()
     } else {
-      // alert("NO IA")
     }
   }
 }
@@ -262,12 +258,6 @@ function changeDirection (e) {
 function ButtonMousedown (e) {
   /** @type {CanvasRenderingContext2D} */
   var context = e.target.getContext('2d')
-  console.log(
-    'padding',
-    parseInt(
-      window.getComputedStyle(controls, null).getPropertyValue('padding-left')
-    )
-  )
   var coordX =
     e.offsetX -
     parseInt(
@@ -329,6 +319,7 @@ function changeSpeed (e) {
   speedValueText.innerHTML = 'Speed: ' + this.value
   localStorage.setItem('speed', parseInt(e.target.value))
 }
+
 function pressArrows (arrow) {
   contextControls.strokeStyle = 'white'
   contextControls.stroke(arrow)
@@ -337,9 +328,9 @@ function pressArrows (arrow) {
 function toogleAIassistance (e) {
   console.log('change swith')
   a = document.querySelectorAll('.switch input').item(0) // and perhaps add chk.onchange() if needed
-  if (a.checked) {
-    a.checked = false
+  if (switchOnOff.checked) {
+    switchOnOff.checked = false
   } else {
-    a.checked = true
+    switchOnOff.checked = true
   }
 }

@@ -25,7 +25,6 @@
 }
 
 .slider:before {
-  
   position: absolute;
   content: '';
   height: 26px;
@@ -59,4 +58,3 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 }
-

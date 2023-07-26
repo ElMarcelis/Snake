@@ -2,23 +2,20 @@
 function newFoodPosition () {
   console.log('newFoodPosition')
   if (boardSize > snakeBody.length) {
-    // in x coordinates.
-    food.x = Math.floor(Math.random() * boardCols) * blockSize
-
-    //in y coordinates.
-    food.y = Math.floor(Math.random() * boardRows) * blockSize
-
-    for (let i = 0; i < snakeBody.length; i++) {
-      if (food.x == snakeBody[i].x && food.y == snakeBody[i].y) {
+    while (true) {
+      food.x = Math.floor(Math.random() * boardCols) * blockSize
+      food.y = Math.floor(Math.random() * boardRows) * blockSize
+      if (pointInArray(snakeBody, food)) {
         // food on snake body
         console.log('new food on body')
-        newFoodPosition()
+      } else {
+        break
       }
     }
   }
 }
+
 function drawFood () {
-  // Set food color and position
   // console.log('        Drawing food')
   context.fillStyle = 'red'
   context.beginPath()
@@ -48,6 +45,7 @@ function drawFood () {
   context.fill()
 }
 
+/**Draw light reflection on the surface*/
 function drawReflection (centerX, centerY, radius) {
   context.fillStyle = 'white'
   context.beginPath()
@@ -60,37 +58,35 @@ function drawReflection (centerX, centerY, radius) {
   )
   context.fill()
 }
+
+function bodyColor (variation, i) {
+  color = `rgb(${255 - variation * (i + 1)} ${255 - variation * (i + 1)} 255`
+  return color
+}
+
+function circColor (variation, i) {
+  color = `rgb(${255 - variation * (i + 1)} ${variation * (i + 1)} ${
+    255 - variation * (i + 1)
+  }`
+  return color
+}
+
 function drawSnakeBody () {
   // console.log('        Dwawing snake body')
-
   let minSize = 0.6
   let minMargin = 0.2
   let size
+  let variation = 255 / snakeBody.length
 
-  variacion = 255 / snakeBody.length
   for (let i = 0; i < snakeBody.length; i++) {
-    color =
-      'rgb(' +
-      (255 - variacion * (i + 1)) +
-      ' ' +
-      (255 - variacion * (i + 1)) +
-      ' ' +
-      255 +
-      ')'
+    let bodyPartColor = bodyColor(variation, i)
     size = 1 - i * 0.1
-    margin = (1 - size) / 2
     if (i > 0) {
-      context.fillStyle = color
+      //body part
+      context.fillStyle = bodyPartColor
       context.fillRect(snakeBody[i].x, snakeBody[i].y, blockSize, blockSize)
-      color_circ =
-        'rgb(' +
-        (255 - variacion * (i + 1)) +
-        ' ' +
-        variacion * (i + 1) +
-        ' ' +
-        (255 - variacion * (i + 1)) +
-        ')'
-      context.fillStyle = color_circ
+      //body circle
+      context.fillStyle = circColor(variation, i)
       if (snakeBody.length - i <= 3) {
         // Tale
         minSize -= 0.1
@@ -103,10 +99,11 @@ function drawSnakeBody () {
           blockSize * minSize
         )
       } else {
+        // body (not tale)
         if (food_eated.indexOf(i) >= 0) {
+          //food in the belly
           size = 1
         }
-
         context.beginPath()
         context.arc(
           snakeBody[i].x + blockSize / 2,
@@ -127,23 +124,18 @@ function drawSnakeBody () {
         }
       }
     } else {
-      neckColor = color
+      neckColor = bodyPartColor
     }
   }
   drawSnakeHead()
 }
+
 function drawSnakeHead () {
   // console.log('        Drawing head')
 
   let pupilSize = 0.14
   let irisSize = 0.2
-  let aa = 0
-  if (food_eated.length > 0 && food_eated[0] == -1) {
-    pupilSize = 0.14 * 1.7
-    irisSize = 0.2 * 1.5
-    aa = 0.075
-  }
-
+  let eyeSeparation = 0
   let neckX
   let neckY
   let neckWidth
@@ -152,15 +144,18 @@ function drawSnakeHead () {
   let eyeRY
   let eyeLX
   let eyeLY
-
-  direct = currDirection.x + '|' + currDirection.y
-  // console.log('            direction', direct)
+  if (food_eated.length > 0 && food_eated[0] == -1) {
+    //eating food
+    pupilSize = 0.14 * 1.7
+    irisSize = 0.2 * 1.5
+    eyeSeparation = 0.075
+  }
   switch (currDirection) {
     case directions.up:
       // coeyeLXnsole.log('            eyes up')
-      eyeRX = 0.3 - aa
+      eyeRX = 0.3 - eyeSeparation
       eyeRY = 0.3
-      eyeLX = 0.7 + aa
+      eyeLX = 0.7 + eyeSeparation
       eyeLY = 0.3
       neckX = snakeBody[0].x
       neckY = snakeBody[0].y + blockSize / 2
@@ -169,9 +164,9 @@ function drawSnakeHead () {
       break
     case directions.down:
       // console.log('            eyes down')
-      eyeRX = 0.7 + aa
+      eyeRX = 0.7 + eyeSeparation
       eyeRY = 0.7
-      eyeLX = 0.3 - aa
+      eyeLX = 0.3 - eyeSeparation
       eyeLY = 0.7
       neckX = snakeBody[0].x
       neckY = snakeBody[0].y
@@ -181,9 +176,9 @@ function drawSnakeHead () {
     case directions.left:
       // console.log('            eyes left')
       eyeRX = 0.3
-      eyeRY = 0.7 + aa
+      eyeRY = 0.7 + eyeSeparation
       eyeLX = 0.3
-      eyeLY = 0.3 - aa
+      eyeLY = 0.3 - eyeSeparation
       neckX = snakeBody[0].x + blockSize / 2
       neckY = snakeBody[0].y
       neckWidth = blockSize / 2
@@ -192,9 +187,9 @@ function drawSnakeHead () {
     case directions.right:
       // console.log('            eyes right')
       eyeRX = 0.7
-      eyeRY = 0.3 - aa
+      eyeRY = 0.3 - eyeSeparation
       eyeLX = 0.7
-      eyeLY = 0.7 + aa
+      eyeLY = 0.7 + eyeSeparation
       neckX = snakeBody[0].x
       neckY = snakeBody[0].y
       neckWidth = blockSize / 2
@@ -202,9 +197,9 @@ function drawSnakeHead () {
       break
     default:
       // console.log('            eyes default')
-      eyeRX = 0.3 - aa
+      eyeRX = 0.3 - eyeSeparation
       eyeRY = 0.3
-      eyeLX = 0.7 + aa
+      eyeLX = 0.7 + eyeSeparation
       eyeLY = 0.3
       neckX = snakeBody[0].x
       neckY = snakeBody[0].y + blockSize / 2
@@ -228,24 +223,29 @@ function drawSnakeHead () {
   )
   context.fill()
 
-  //iris right
+  drawEye(eyeRX, eyeRY, irisSize, pupilSize)
+  drawEye(eyeLX, eyeLY, irisSize, pupilSize)
+}
+
+function drawEye (eyeX, eyeY, irisSize, pupilSize) {
+  //iris
   context.fillStyle = 'rgb(247 244 22)'
   context.beginPath()
   context.arc(
-    head.x + blockSize * eyeRX,
-    head.y + blockSize * eyeRY,
+    head.x + blockSize * eyeX,
+    head.y + blockSize * eyeY,
     blockSize * irisSize,
     0,
     2 * Math.PI
   )
   context.fill()
 
-  //Pupil right
+  //Pupil
   context.fillStyle = 'black'
   context.beginPath()
   context.arc(
-    head.x + blockSize * eyeRX,
-    head.y + blockSize * eyeRY,
+    head.x + blockSize * eyeX,
+    head.y + blockSize * eyeY,
     blockSize * pupilSize,
     0,
     2 * Math.PI
@@ -253,113 +253,61 @@ function drawSnakeHead () {
   context.fill()
 
   drawReflection(
-    head.x + blockSize * eyeRX,
-    head.y + blockSize * eyeRY,
-    blockSize * irisSize
-  )
-
-  //iris left
-  context.fillStyle = 'rgb(247 244 22)'
-  context.beginPath()
-  context.arc(
-    head.x + blockSize * eyeLX,
-    head.y + blockSize * eyeLY,
-    blockSize * irisSize,
-    0,
-    2 * Math.PI
-  )
-  context.fill()
-
-  //Pupil left
-  context.fillStyle = 'black'
-  context.beginPath()
-  context.arc(
-    head.x + blockSize * eyeLX,
-    head.y + blockSize * eyeLY,
-    blockSize * pupilSize,
-    0,
-    2 * Math.PI
-  )
-  context.fill()
-
-  drawReflection(
-    head.x + blockSize * eyeLX,
-    head.y + blockSize * eyeLY,
+    head.x + blockSize * eyeX,
+    head.y + blockSize * eyeY,
     blockSize * irisSize
   )
 }
+
 function drawControls () {
-  var cx = controls.width / 2
-  var cy = blockSize * 2
+  var centerX = controls.width / 2
+  var centerY = blockSize * 2
 
-  // in case you like using degrees
-  function toRadians (deg) {
-    return (deg * Math.PI) / 180
-  }
-
-  // buttonUP.beginPath()
-  buttonDown.moveTo(cx, cy)
-  buttonDown.arc(cx, cy, controls.width * 0.5, toRadians(45), toRadians(135))
-  buttonDown.lineTo(cx, cy)
-  buttonDown.closePath()
-  contextControls.fillStyle = 'rgb(244 87 87)'
-  contextControls.fill(buttonDown)
-
-  buttonLeft.moveTo(cx, cy)
-  buttonLeft.arc(cx, cy, controls.width * 0.5, toRadians(135), toRadians(225))
-  buttonLeft.lineTo(cx, cy)
-  buttonLeft.closePath()
-  contextControls.fillStyle = 'rgb(88 152 243)'
-  contextControls.fill(buttonLeft)
-
-  buttonUp.moveTo(cx, cy)
-  buttonUp.arc(cx, cy, controls.width * 0.5, toRadians(225), toRadians(315))
-  buttonUp.lineTo(cx, cy)
-  buttonUp.closePath()
-  contextControls.fillStyle = 'rgb(82 243 98)'
-  contextControls.fill(buttonUp)
-
-  buttonRight.moveTo(cx, cy)
-  buttonRight.arc(cx, cy, controls.width * 0.5, toRadians(315), toRadians(45))
-  buttonRight.lineTo(cx, cy)
-  contextControls.closePath()
-  contextControls.fillStyle = 'rgb(243 208 82)'
-  contextControls.fill(buttonRight)
+  drawButton(buttonDown, centerX, centerY, 'rgb(244 87 87)', 45, 135)
+  drawButton(buttonLeft, centerX, centerY, 'rgb(88 152 243)', 135, 225)
+  drawButton(buttonUp, centerX, centerY, 'rgb(82 243 98)', 225, 315)
+  drawButton(buttonRight, centerX, centerY, 'rgb(243 208 82)', 315, 45)
 
   contextControls.lineWidth = blockSize / 5
 
-  arrowUp.moveTo(cx - blockSize * 0.7, cy - blockSize)
-  arrowUp.lineTo(cx, cy - blockSize * 1.7)
-  arrowUp.lineTo(cx + blockSize * 0.7, cy - blockSize)
-  contextControls.closePath()
-  contextControls.strokeStyle = 'black'
-  contextControls.stroke(arrowUp)
-
-  arrowDown.moveTo(cx + blockSize * 0.7, cy + blockSize)
-  arrowDown.lineTo(cx, cy + blockSize * 1.7)
-  arrowDown.lineTo(cx - blockSize * 0.7, cy + blockSize)
-  contextControls.closePath()
-  contextControls.strokeStyle = 'black'
-  contextControls.stroke(arrowDown)
-
-  arrowRight.moveTo(cx + blockSize, cy + blockSize * 0.7)
-  arrowRight.lineTo(cx + blockSize * 1.7, cy)
-  arrowRight.lineTo(cx + blockSize, cy - blockSize * 0.7)
-  contextControls.closePath()
-  contextControls.strokeStyle = 'black'
-  contextControls.stroke(arrowRight)
-
-  arrowLeft.moveTo(cx - blockSize, cy + blockSize * 0.7)
-  arrowLeft.lineTo(cx - blockSize * 1.7, cy)
-  arrowLeft.lineTo(cx - blockSize, cy - blockSize * 0.7)
-  contextControls.closePath()
-  contextControls.strokeStyle = 'black'
-  contextControls.stroke(arrowLeft)
-  // arrowLeft.moveTo(cx, cy)
-  // arrowDown.moveTo(cx, cy)
-
-  // arrowRight.moveTo(cx, cy)
+  drawArrow(
+    arrowUp,
+    centerX - blockSize * 0.7,
+    centerY - blockSize,
+    centerX,
+    centerY - blockSize * 1.7,
+    centerX + blockSize * 0.7,
+    centerY - blockSize
+  )
+  drawArrow(
+    arrowDown,
+    centerX + blockSize * 0.7,
+    centerY + blockSize,
+    centerX,
+    centerY + blockSize * 1.7,
+    centerX - blockSize * 0.7,
+    centerY + blockSize
+  )
+  drawArrow(
+    arrowRight,
+    centerX + blockSize,
+    centerY + blockSize * 0.7,
+    centerX + blockSize * 1.7,
+    centerY,
+    centerX + blockSize,
+    centerY - blockSize * 0.7
+  )
+  drawArrow(
+    arrowLeft,
+    centerX - blockSize,
+    centerY + blockSize * 0.7,
+    centerX - blockSize * 1.7,
+    centerY,
+    centerX - blockSize,
+    centerY - blockSize * 0.7
+  )
 }
+
 function resetArrows () {
   console.log('resetArrows')
   contextControls.strokeStyle = 'black'
@@ -367,4 +315,33 @@ function resetArrows () {
   contextControls.stroke(arrowDown)
   contextControls.stroke(arrowLeft)
   contextControls.stroke(arrowRight)
+}
+
+function drawButton (button, centerX, centerY, color, start, end) {
+  button.moveTo(centerX, centerY)
+  button.arc(
+    centerX,
+    centerY,
+    controls.width * 0.5,
+    toRadians(start),
+    toRadians(end)
+  )
+  button.lineTo(centerX, centerY)
+  button.closePath()
+  contextControls.fillStyle = color
+  contextControls.fill(button)
+}
+
+function drawArrow (arrow, startX, startY, centerX, centerY, endX, endY) {
+  arrow.moveTo(startX, startY)
+  arrow.lineTo(centerX, centerY)
+  arrow.lineTo(endX, endY)
+  contextControls.closePath()
+  contextControls.strokeStyle = 'black'
+  contextControls.stroke(arrow)
+}
+
+/**Convert degrees to radians*/
+function toRadians (deg) {
+  return (deg * Math.PI) / 180
 }

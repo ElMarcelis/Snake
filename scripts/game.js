@@ -5,6 +5,7 @@ class BodyPart_distance {
     this.distance = distance
   }
 }
+
 class Visited_blocks {
   constructor () {
     this.visited = []
@@ -16,14 +17,18 @@ class Visited_blocks {
       this.visited.push(row)
     }
   }
-  updateVal (r, c, value) {
-    this.visited[r][c] = value
+  setVal (row, col, value) {
+    this.visited[row][col] = value
   }
   getVal (row, col) {
     return this.visited[row][col]
   }
 }
 
+/**Uses the actual state of the game enviroment
+ * to inference the model
+ * and computes the next move
+ */
 async function agent () {
   let tensorA = getState()
   // prepare feeds. use model input names as keys.
@@ -46,32 +51,25 @@ async function agent () {
 function _move (next_move) {
   let idx = carrousel.indexOf(currDirection)
   // console.log('idx:', idx)
-  let new_dir = 0
+  let new_direction = 0
   let new_idx = 0
   switch (next_move.join()) {
     case '1,0,0':
-      // console.log('1,0,0', idx)
-      new_dir = carrousel[idx]
+      new_direction = carrousel[idx]
       break
     case '0,1,0':
-      new_idx = (idx + 1) % 4
-      // console.log('0,1,0', new_idx)
-      new_dir = carrousel[new_idx]
+      new_idx = calcMod(idx + 1, 4)
+      new_direction = carrousel[new_idx]
       break
     case '0,0,1':
-      new_idx = (idx - 1) % 4
-      if (idx == 0) {
-        new_idx = 3
-      }
-      // console.log('0,0,1', new_idx)
-      new_dir = carrousel[new_idx]
+      new_idx = calcMod(idx - 1, 4)
+      new_direction = carrousel[new_idx]
       break
     default:
       console.log(' *************** ojo al piojo ***************')
       break
   }
-  // console.log('new_dir:', JSON.stringify(new_dir))
-  currDirection = new_dir
+  currDirection = new_direction
 }
 
 function is_collision (pnt) {
@@ -80,22 +78,14 @@ function is_collision (pnt) {
     return true
   }
   // hits itself
-
   if (pointInArray(snakeBody.slice(0, -1), pnt)) {
     return true
   }
-  // for (let i = 1; i < snakeBody.length - 1; i++) {
-  //   if (pnt.x == snakeBody[i][0] && pnt.y == snakeBody[i][1]) {
-  //     // Snake eats own body
-  //     return true
-  //   }
-  // }
   return false
 }
 
 /** Gets the actual state of the enviroment */
 function getState () {
-  // Get the actual state of the enviroment
   let point_l = new Point(head.x - blockSize, head.y)
   let point_r = new Point(head.x + blockSize, head.y)
   let point_u = new Point(head.x, head.y - blockSize)
@@ -105,9 +95,7 @@ function getState () {
   let dir_u = currDirection === directions.up
   let dir_d = currDirection === directions.down
 
-  tale_food_pos = tale_food_space(point_l, point_r, point_u, point_d)
-
-  // tale_food_pos = [0, 0, 0]
+  let tale_food_dist = tale_food_distance(point_l, point_r, point_u, point_d)
 
   let state = [
     // Danger straight
@@ -125,7 +113,6 @@ function getState () {
       (dir_u && is_collision(point_l)) ||
       (dir_r && is_collision(point_u)) ||
       (dir_l && is_collision(point_d)),
-
     // Move direction
     dir_l, // 3
     dir_r, // 4
@@ -137,21 +124,16 @@ function getState () {
     food.y < head.y, // food up
     food.y > head.y, // food down
     // tale an food position
-    tale_food_pos[0], // cen
-    tale_food_pos[1], // der
-    tale_food_pos[2] // izq
+    tale_food_dist[0], // cen
+    tale_food_dist[1], // der
+    tale_food_dist[2] // izq
   ]
-  // return np.array(state, dtype=int)
-
-  // state[11] = -state[0]
-  // state[12] = -state[1]
-  // state[13] = -state[2]
-
   tensorA = new ort.Tensor('float32', state, [14])
   // console.log(JSON.stringify(tensorA))
   return tensorA
 }
-function tale_food_space (point_l, point_r, point_u, point_d) {
+
+function tale_food_distance (point_l, point_r, point_u, point_d) {
   let cen = 0
   let der = 0
   let izq = 0
@@ -203,28 +185,22 @@ function tale_food_space (point_l, point_r, point_u, point_d) {
     food_found[2] = result[1]
     tale_found[2] = result[2]
   }
-  block_room = [cen, der, izq]
+ 
   block_room = [0, 0, 0]
   if (Math.max(...tale_found) > 0) {
     block_room[tale_found.indexOf(Math.max(...tale_found))] = 1
     return block_room
   }
 
-  if (tale_found[0] > 0) {
-    return [1, 0, 0]
-  } else if (tale_found[1] > 0) {
-    return [0, 1, 0]
-  } else if (tale_found[2] > 0) {
-    return [0, 0, 1]
-  }
   return [0, 0, 0]
 }
+
 function _count_blocks (point) {
-  let count = 1
+  let freeSpace = 1
   let food_found = 0
   let tale_found = 0
-  let row = 0
-  let col = 0
+  let row = point.y / blockSize
+  let col = point.x / blockSize
   if (pointInArray(snakeBody.slice(0, -1), point)) {
     // is in body
     // console.log('Is in body')
@@ -241,21 +217,19 @@ function _count_blocks (point) {
     return [0, food_found, tale_found]
   }
 
-  let bodyParts = [new BodyPart_distance(point, 1)]
   let visited = new Visited_blocks()
   for (let index = 0; index < snakeBody.length; index++) {
     c = snakeBody[index].x / blockSize
     r = snakeBody[index].y / blockSize
-    visited.updateVal(r, c, index + 2)
+    visited.setVal(r, c, index + 2)
   }
-  if (point == food) {
+  if (point.x == food.x && point.y == food.y) {
     food_found = 1
   }
 
-  row = point.y / blockSize
-  col = point.x / blockSize
-  visited.updateVal(row, col, 1)
-
+  //breadth search first
+  let bodyParts = [new BodyPart_distance(point, 1)]
+  visited.setVal(row, col, 1)
   while (bodyParts.length > 0 && (tale_found == 0 || food_found == 0)) {
     let currBodyPart = bodyParts.shift()
     let ziparray = zip([1, 0, -1, 0], [0, 1, 0, -1])
@@ -269,7 +243,7 @@ function _count_blocks (point) {
         snakeBody.slice(-1)[0].y == (currBodyPart.row + r) * blockSize
       ) {
         tale_found = currBodyPart.distance
-        count += 1
+        freeSpace += 1
       }
       if (isSafe(currBodyPart.row + r, currBodyPart.col + c, visited)) {
         if (
@@ -279,8 +253,8 @@ function _count_blocks (point) {
         ) {
           food_found = currBodyPart.distance
         }
-        visited.updateVal(currBodyPart.row + r, currBodyPart.col + c, 1)
-        count += 1
+        visited.setVal(currBodyPart.row + r, currBodyPart.col + c, 1)
+        freeSpace += 1
         bodyParts.push(
           new BodyPart_distance(
             new Point(
@@ -293,8 +267,9 @@ function _count_blocks (point) {
       }
     }
   }
-  return [count, food_found, tale_found]
+  return [freeSpace, food_found, tale_found]
 }
+
 function isSafe (row, col, visited) {
   if (
     row >= 0 &&
@@ -308,6 +283,7 @@ function isSafe (row, col, visited) {
     return false
   }
 }
+
 function pointInArray (arr, point) {
   if (arr.findIndex(p => p.x == point.x && p.y == point.y) > -1) {
     // console.log('Is in array')
@@ -316,6 +292,7 @@ function pointInArray (arr, point) {
     return false
   }
 }
+
 function calcMod (a, b) {
   result = a % b
   if (result == -1) {
@@ -323,6 +300,11 @@ function calcMod (a, b) {
   }
   return result
 }
+
+/**
+ * @param {Array} a - Array 1
+ * @param {Array} b - Array 2
+ */
 function zip (a, b) {
   var c = a.map(function (e, i) {
     return [e, b[i]]
