@@ -185,7 +185,7 @@ function tale_food_distance (point_l, point_r, point_u, point_d) {
     food_found[2] = result[1]
     tale_found[2] = result[2]
   }
- 
+
   block_room = [0, 0, 0]
   if (Math.max(...tale_found) > 0) {
     block_room[tale_found.indexOf(Math.max(...tale_found))] = 1

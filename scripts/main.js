@@ -74,12 +74,12 @@ window.onload = function () {
   )
   blockSize -= blockSize % boardRows
   board.height = blockSize * boardRows
-  board.width = blockSize * boardRows
+  board.width = blockSize * boardCols
   console.log('board.height', board.height)
   context = board.getContext('2d')
   controls = document.getElementById('controls')
-  controls.height = 4 * blockSize
-  controls.width = 4 * blockSize
+  controls.height = board.height / 2
+  controls.width = board.width / 2
   contextControls = controls.getContext('2d')
   // controls.addEventListener('mousedown', ButtonMousedown)
   controls.addEventListener('pointerdown', ButtonMousedown)
@@ -101,7 +101,7 @@ window.onload = function () {
   scoreBoard = document.getElementById('score')
   sliderSpeed = document.getElementById('speed')
   sliderSpeed.addEventListener('input', changeSpeed)
-  speedValueText = document.getElementById('speedValue')
+  speedValueText = document.getElementById('speedvalue')
 
   /** Creates the session and load the model to inference */
   async function createSession () {
@@ -132,8 +132,8 @@ function reset () {
   console.log('Reseting')
   currDirection = { x: 0, y: 0 } //auto restart
   // currDirection = directions.up
-  head.x = blockSize * (boardCols / 2 -1)
-  head.y = blockSize * (boardRows -4)  
+  head.x = blockSize * (boardCols / 2 - 1)
+  head.y = blockSize * (boardRows - 4)
   snakeBody = [
     new Point([head.x, head.y]),
     new Point([head.x, head.y + blockSize * 1]),
@@ -188,7 +188,7 @@ function update () {
         newFoodPosition()
         drawFood()
       } else {
-        alert('WIIIN')
+        alert('Mission accomplished!')
         reset()
         return
       }

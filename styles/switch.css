@@ -2,8 +2,8 @@
   position: relative;
   display: inline-block;
   width: 60px;
-  height: 34px;
-  margin-bottom: 10px;
+  height: 30px;
+  margin-bottom: 0px;
 }
 
 .switch input {
@@ -30,7 +30,7 @@
   height: 26px;
   width: 26px;
   left: 4px;
-  bottom: 4px;
+  bottom: 2px;
   background-color: white;
   -webkit-transition: 0.4s;
   transition: 0.4s;
@@ -52,7 +52,7 @@ input:checked + .slider:before {
 
 /* Rounded sliders */
 .slider.round {
-  border-radius: 34px;
+  border-radius: 30px;
 }
 
 .slider.round:before {

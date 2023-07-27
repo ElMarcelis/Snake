@@ -261,50 +261,50 @@ function drawEye (eyeX, eyeY, irisSize, pupilSize) {
 
 function drawControls () {
   var centerX = controls.width / 2
-  var centerY = blockSize * 2
-
+  var centerY = controls.height / 2 //blockSize * 2
+  var buttonSize = controls.width / 4
   drawButton(buttonDown, centerX, centerY, 'rgb(244 87 87)', 45, 135)
   drawButton(buttonLeft, centerX, centerY, 'rgb(88 152 243)', 135, 225)
   drawButton(buttonUp, centerX, centerY, 'rgb(82 243 98)', 225, 315)
   drawButton(buttonRight, centerX, centerY, 'rgb(243 208 82)', 315, 45)
 
-  contextControls.lineWidth = blockSize / 5
+  contextControls.lineWidth = buttonSize / 5
 
   drawArrow(
     arrowUp,
-    centerX - blockSize * 0.7,
-    centerY - blockSize,
+    centerX - buttonSize * 0.7,
+    centerY - buttonSize,
     centerX,
-    centerY - blockSize * 1.7,
-    centerX + blockSize * 0.7,
-    centerY - blockSize
+    centerY - buttonSize * 1.7,
+    centerX + buttonSize * 0.7,
+    centerY - buttonSize
   )
   drawArrow(
     arrowDown,
-    centerX + blockSize * 0.7,
-    centerY + blockSize,
+    centerX + buttonSize * 0.7,
+    centerY + buttonSize,
     centerX,
-    centerY + blockSize * 1.7,
-    centerX - blockSize * 0.7,
-    centerY + blockSize
+    centerY + buttonSize * 1.7,
+    centerX - buttonSize * 0.7,
+    centerY + buttonSize
   )
   drawArrow(
     arrowRight,
-    centerX + blockSize,
-    centerY + blockSize * 0.7,
-    centerX + blockSize * 1.7,
+    centerX + buttonSize,
+    centerY + buttonSize * 0.7,
+    centerX + buttonSize * 1.7,
     centerY,
-    centerX + blockSize,
-    centerY - blockSize * 0.7
+    centerX + buttonSize,
+    centerY - buttonSize * 0.7
   )
   drawArrow(
     arrowLeft,
-    centerX - blockSize,
-    centerY + blockSize * 0.7,
-    centerX - blockSize * 1.7,
+    centerX - buttonSize,
+    centerY + buttonSize * 0.7,
+    centerX - buttonSize * 1.7,
     centerY,
-    centerX - blockSize,
-    centerY - blockSize * 0.7
+    centerX - buttonSize,
+    centerY - buttonSize * 0.7
   )
 }
 

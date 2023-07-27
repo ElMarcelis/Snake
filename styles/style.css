@@ -7,19 +7,26 @@ body {
   outline: red 1px solid;
 }
 #controls {
-  padding: 22px 22px 0px 22px;
+  margin-top: 0px;
+  padding: 20px;
+  /* outline: yellow 1px solid; */
 }
 #score {
+  margin: 0px;
   font-size: 30px;
   float: left;
+  margin-right: 30px;
 }
 #help {
+  margin-top: 0px;
   font-size: 30px;
   float: right;
 }
 #card {
   display: inline-block;
   padding-top: 10px;
+  margin-bottom: 0px;
+  margin-top: 0px;
 }
 .leftcolumn {
   float: left;
@@ -29,7 +36,11 @@ body {
   float: none;
 }
 #slidecontainer {
-  padding-top: 25px;
+  padding: 0px;
+  margin: 0px;
+}
+#speedvalue{
+  margin: 0px;
 }
 /* Responsive layout - when the screen is less than 800px wide, make the two columns stack on top of each other instead of next to each other */
 @media screen and (max-width: 800px) {
