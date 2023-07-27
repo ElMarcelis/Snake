@@ -36,19 +36,18 @@ async function agent () {
 
   // feed inputs and run
   const results = await session.run(feeds)
-  // strObj = JSON.stringify(results, null, 4) // (Optional) beautiful indented output.
-  // console.log(strObj); // Logs output to dev tools console.
-
+  // console.log(JSON.stringify(results, null, 4)); 
   let next_move = [0, 0, 0]
   resutArray = Object.values(results.output.data)
   let move = resutArray.indexOf(Math.max(...resutArray))
   next_move[move] = 1
   // console.log('next_move:', next_move)
 
-  _move(next_move)
+  setNewDirection(next_move)
 }
 
-function _move (next_move) {
+/**set the direction of the snake*/
+function setNewDirection (next_move) {
   let idx = carrousel.indexOf(currDirection)
   // console.log('idx:', idx)
   let new_direction = 0
@@ -78,7 +77,7 @@ function is_collision (pnt) {
     return true
   }
   // hits itself
-  if (pointInArray(snakeBody.slice(0, -1), pnt)) {
+  if (isPointInArray(snakeBody.slice(0, -1), pnt)) {
     return true
   }
   return false
@@ -123,7 +122,7 @@ function getState () {
     food.x > head.x, // food right
     food.y < head.y, // food up
     food.y > head.y, // food down
-    // tale an food position
+    // tale an food distance
     tale_food_dist[0], // cen
     tale_food_dist[1], // der
     tale_food_dist[2] // izq
@@ -142,7 +141,7 @@ function tale_food_distance (point_l, point_r, point_u, point_d) {
   let tale_near = false
   let points = [point_r, point_d, point_l, point_u]
 
-  if (pointInArray(points, snakeBody.slice(-1)[0])) {
+  if (isPointInArray(points, snakeBody.slice(-1)[0])) {
     tale_near = true
   }
 
@@ -153,61 +152,61 @@ function tale_food_distance (point_l, point_r, point_u, point_d) {
   if (
     tale_near ||
     is_collision(points[idx_dir]) ||
-    (pointInArray(
+    (isPointInArray(
       snakeBody,
       new Point(
         points[calcMod(idx_dir + 1, 4)].x + shift.x,
         points[calcMod(idx_dir + 1, 4)].y + shift.y
       )
     ) &&
-      pointInArray(snakeBody.slice(0, -1), points[calcMod(idx_dir + 1, 4)]) ==
+      isPointInArray(snakeBody.slice(0, -1), points[calcMod(idx_dir + 1, 4)]) ==
         false) ||
-    (pointInArray(
+    (isPointInArray(
       snakeBody,
       new Point(
         points[calcMod(idx_dir - 1, 4)].x + shift.x,
         points[calcMod(idx_dir - 1, 4)].y + shift.y
       )
     ) &&
-      pointInArray(snakeBody.slice(0, -1), points[calcMod(idx_dir - 1, 4)]) ==
+      isPointInArray(snakeBody.slice(0, -1), points[calcMod(idx_dir - 1, 4)]) ==
         false)
   ) {
-    result = _count_blocks(points[idx_dir])
+    result = countBlocks(points[idx_dir])// straight ahead
     cen = result[0]
     food_found[0] = result[1]
     tale_found[0] = result[2]
-    result = _count_blocks(points[calcMod(idx_dir + 1, 4)])
+    result = countBlocks(points[calcMod(idx_dir + 1, 4)])// Turning right
     der = result[0]
     food_found[1] = result[1]
     tale_found[1] = result[2]
-    result = _count_blocks(points[calcMod(idx_dir - 1, 4)])
+    result = countBlocks(points[calcMod(idx_dir - 1, 4)])// Turning left
     izq = result[0]
     food_found[2] = result[1]
     tale_found[2] = result[2]
   }
 
-  block_room = [0, 0, 0]
+  let taleDistance = [0, 0, 0]
   if (Math.max(...tale_found) > 0) {
-    block_room[tale_found.indexOf(Math.max(...tale_found))] = 1
-    return block_room
+    taleDistance[tale_found.indexOf(Math.max(...tale_found))] = 1
+    return taleDistance
   }
 
   return [0, 0, 0]
 }
 
-function _count_blocks (point) {
+function countBlocks (point) {
   let freeSpace = 1
   let food_found = 0
   let tale_found = 0
   let row = point.y / blockSize
   let col = point.x / blockSize
-  if (pointInArray(snakeBody.slice(0, -1), point)) {
+  if (isPointInArray(snakeBody.slice(0, -1), point)) {
     // is in body
     // console.log('Is in body')
     return [0, food_found, tale_found]
   }
 
-  if (pointInArray(snakeBody.slice(-1), point)) {
+  if (isPointInArray(snakeBody.slice(-1), point)) {
     // is the tale
     // console.log('Is tale')
     return [1, food_found, 1]
@@ -284,7 +283,7 @@ function isSafe (row, col, visited) {
   }
 }
 
-function pointInArray (arr, point) {
+function isPointInArray (arr, point) {
   if (arr.findIndex(p => p.x == point.x && p.y == point.y) > -1) {
     // console.log('Is in array')
     return true

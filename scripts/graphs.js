@@ -5,7 +5,7 @@ function newFoodPosition () {
     while (true) {
       food.x = Math.floor(Math.random() * boardCols) * blockSize
       food.y = Math.floor(Math.random() * boardRows) * blockSize
-      if (pointInArray(snakeBody, food)) {
+      if (isPointInArray(snakeBody, food)) {
         // food on snake body
         console.log('new food on body')
       } else {
@@ -15,6 +15,7 @@ function newFoodPosition () {
   }
 }
 
+/** Draws the food and reflection*/
 function drawFood () {
   // console.log('        Drawing food')
   context.fillStyle = 'red'
@@ -45,7 +46,7 @@ function drawFood () {
   context.fill()
 }
 
-/**Draw light reflection on the surface*/
+/**Draws light reflection on the surface*/
 function drawReflection (centerX, centerY, radius) {
   context.fillStyle = 'white'
   context.beginPath()
@@ -59,11 +60,13 @@ function drawReflection (centerX, centerY, radius) {
   context.fill()
 }
 
+/** Color of body part */
 function bodyColor (variation, i) {
   color = `rgb(${255 - variation * (i + 1)} ${255 - variation * (i + 1)} 255`
   return color
 }
 
+/** Color of the circle in body part */
 function circColor (variation, i) {
   color = `rgb(${255 - variation * (i + 1)} ${variation * (i + 1)} ${
     255 - variation * (i + 1)
@@ -71,6 +74,7 @@ function circColor (variation, i) {
   return color
 }
 
+/**Draws the snake body and food in belly with its reflection */
 function drawSnakeBody () {
   // console.log('        Dwawing snake body')
   let minSize = 0.6
@@ -85,7 +89,7 @@ function drawSnakeBody () {
       //body part
       context.fillStyle = bodyPartColor
       context.fillRect(snakeBody[i].x, snakeBody[i].y, blockSize, blockSize)
-      //body circle
+      //body partcircle
       context.fillStyle = circColor(variation, i)
       if (snakeBody.length - i <= 3) {
         // Tale
@@ -130,6 +134,7 @@ function drawSnakeBody () {
   drawSnakeHead()
 }
 
+/** Draws the snake face, neck and eyes*/
 function drawSnakeHead () {
   // console.log('        Drawing head')
 
@@ -146,8 +151,8 @@ function drawSnakeHead () {
   let eyeLY
   if (food_eated.length > 0 && food_eated[0] == -1) {
     //eating food
-    pupilSize = 0.14 * 1.7
-    irisSize = 0.2 * 1.5
+    pupilSize *= 1.7
+    irisSize *= 1.5
     eyeSeparation = 0.075
   }
   switch (currDirection) {
@@ -227,6 +232,7 @@ function drawSnakeHead () {
   drawEye(eyeLX, eyeLY, irisSize, pupilSize)
 }
 
+/**Draws an eye  */
 function drawEye (eyeX, eyeY, irisSize, pupilSize) {
   //iris
   context.fillStyle = 'rgb(247 244 22)'
@@ -259,10 +265,12 @@ function drawEye (eyeX, eyeY, irisSize, pupilSize) {
   )
 }
 
+/**Draws the control buttons*/
 function drawControls () {
   var centerX = controls.width / 2
-  var centerY = controls.height / 2 //blockSize * 2
+  var centerY = controls.height / 2
   var buttonSize = controls.width / 4
+
   drawButton(buttonDown, centerX, centerY, 'rgb(244 87 87)', 45, 135)
   drawButton(buttonLeft, centerX, centerY, 'rgb(88 152 243)', 135, 225)
   drawButton(buttonUp, centerX, centerY, 'rgb(82 243 98)', 225, 315)
@@ -308,6 +316,7 @@ function drawControls () {
   )
 }
 
+/** Paint the control arrows in black */
 function resetArrows () {
   console.log('resetArrows')
   contextControls.strokeStyle = 'black'
@@ -317,6 +326,7 @@ function resetArrows () {
   contextControls.stroke(arrowRight)
 }
 
+/**Draw a button */
 function drawButton (button, centerX, centerY, color, start, end) {
   button.moveTo(centerX, centerY)
   button.arc(
@@ -332,6 +342,7 @@ function drawButton (button, centerX, centerY, color, start, end) {
   contextControls.fill(button)
 }
 
+/**Draw a button arrow */
 function drawArrow (arrow, startX, startY, centerX, centerY, endX, endY) {
   arrow.moveTo(startX, startY)
   arrow.lineTo(centerX, centerY)

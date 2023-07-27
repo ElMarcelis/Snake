@@ -91,7 +91,7 @@ window.onload = function () {
 
   switchOnOff = document.getElementById('cboxSwitch')
   switchClass = document.getElementsByClassName('slider')
-  // hasTouchscreen ?
+  //Touchscreen ?
   if ('ontouchstart' in window) {
     switchClass.item(0).addEventListener('click', function (evt) {
       evt.preventDefault()
@@ -130,8 +130,8 @@ window.onload = function () {
 /** Resets the game to initial conditions */
 function reset () {
   console.log('Reseting')
-  currDirection = { x: 0, y: 0 } //auto restart
-  // currDirection = directions.up
+  currDirection = { x: 0, y: 0 } //starts and waits for a new direction
+  // currDirection = directions.up //auto restart
   head.x = blockSize * (boardCols / 2 - 1)
   head.y = blockSize * (boardRows - 4)
   snakeBody = [
@@ -163,7 +163,7 @@ function update () {
       return
     }
 
-    // Background of a Game
+    // Background of the Game
     context.fillStyle = boardColor
     context.fillRect(0, 0, board.width, board.height)
 
@@ -178,7 +178,7 @@ function update () {
     head.x += currDirection.x * blockSize //updating Snake position in X coordinate.
     head.y += currDirection.y * blockSize //updating Snake position in Y coordinate.
 
-    snakeBody.unshift(new Point([head.x, head.y])) //moves the head to the next position
+    snakeBody.unshift(new Point(head.x, head.y)) //moves the head to the next position
     if (head.x == food.x && head.y == food.y) {
       //It´s eating food
       score += 1
@@ -198,6 +198,7 @@ function update () {
 
     drawSnakeBody()
     drawFood()
+
     // Check if head is Out of bound conditionv
     if (
       head.x < 0 ||
@@ -212,10 +213,8 @@ function update () {
     // Check if head is Snake eats own body
     for (let i = 1; i < snakeBody.length; i++) {
       if (head.x == snakeBody[i].x && head.y == snakeBody[i].y) {
-        // drawEyes()
         console.log('Game Over body')
         gameOver = true
-        // drawSnakeHead()
         return
       }
     }
@@ -232,24 +231,15 @@ function update () {
 function changeDirection (e) {
   console.log('Changing Direction')
   if (e.code == 'ArrowUp' && snakeBody[1].y != head.y - blockSize) {
-    // If up arrow key pressed with this condition...
-    // snake will not move in the opposite direction
-    // console.log('changeDirection UP')
     pressArrows(arrowUp)
     currDirection = directions.up
   } else if (e.code == 'ArrowDown' && snakeBody[1].y != head.y + blockSize) {
-    //If down arrow key pressed
-    // console.log('changeDirection DOWN')
     pressArrows(arrowDown)
     currDirection = directions.down
   } else if (e.code == 'ArrowLeft' && snakeBody[1].x != head.x - blockSize) {
-    //If left arrow key pressed
-    // console.log('changeDirection LEFT')
     pressArrows(arrowLeft)
     currDirection = directions.left
   } else if (e.code == 'ArrowRight' && snakeBody[1].x != head.x + blockSize) {
-    //If Right arrow key pressed
-    // console.log('changeDirection RIGHT')
     pressArrows(arrowRight)
     currDirection = directions.right
   }
@@ -313,8 +303,6 @@ function changeSpeed (e) {
   gameSpeed = 1000 / e.target.value
   console.log('speed', this.value)
   clearInterval(myInterval)
-  // liberar nuestro inervalId de la variable
-  // myInterval = null;
   myInterval = setInterval(update, gameSpeed)
   speedValueText.innerHTML = 'Speed: ' + this.value
   localStorage.setItem('speed', parseInt(e.target.value))
@@ -327,7 +315,7 @@ function pressArrows (arrow) {
 
 function toogleAIassistance (e) {
   console.log('change swith')
-  a = document.querySelectorAll('.switch input').item(0) // and perhaps add chk.onchange() if needed
+  a = document.querySelectorAll('.switch input').item(0)
   if (switchOnOff.checked) {
     switchOnOff.checked = false
   } else {
