@@ -36,12 +36,12 @@ async function agent () {
 
   // feed inputs and run
   const results = await session.run(feeds)
-  // console.log(JSON.stringify(results, null, 4)); 
+  // console.log(JSON.stringify(results, null, 4));
   let next_move = [0, 0, 0]
   resutArray = Object.values(results.output.data)
   let move = resutArray.indexOf(Math.max(...resutArray))
   next_move[move] = 1
-  // console.log('next_move:', next_move)
+  console.log('next_move:', next_move)
 
   setNewDirection(next_move)
 }
@@ -133,9 +133,7 @@ function getState () {
 }
 
 function tale_food_distance (point_l, point_r, point_u, point_d) {
-  let cen = 0
-  let der = 0
-  let izq = 0
+  let emptyRoom = [0, 0, 0]
   let food_found = [0, 0, 0]
   let tale_found = [0, 0, 0]
   let tale_near = false
@@ -171,22 +169,33 @@ function tale_food_distance (point_l, point_r, point_u, point_d) {
       isPointInArray(snakeBody.slice(0, -1), points[calcMod(idx_dir - 1, 4)]) ==
         false)
   ) {
-    result = countBlocks(points[idx_dir])// straight ahead
-    cen = result[0]
-    food_found[0] = result[1]
-    tale_found[0] = result[2]
-    result = countBlocks(points[calcMod(idx_dir + 1, 4)])// Turning right
-    der = result[0]
-    food_found[1] = result[1]
-    tale_found[1] = result[2]
-    result = countBlocks(points[calcMod(idx_dir - 1, 4)])// Turning left
-    izq = result[0]
-    food_found[2] = result[1]
-    tale_found[2] = result[2]
+    countBlocks(
+      // straight ahead
+      points[idx_dir],
+      emptyRoom,
+      food_found,
+      tale_found,
+      0
+    )
+    countBlocks(
+      // Turning right
+      points[calcMod(idx_dir + 1, 4)],
+      emptyRoom,
+      food_found,
+      tale_found,
+      1
+    )
+    countBlocks(
+      // Turning left
+      points[calcMod(idx_dir - 1, 4)],
+      emptyRoom,
+      food_found,
+      tale_found,
+      2
+    )
   }
-
-  let taleDistance = [0, 0, 0]
   if (Math.max(...tale_found) > 0) {
+    let taleDistance = [0, 0, 0]
     taleDistance[tale_found.indexOf(Math.max(...tale_found))] = 1
     return taleDistance
   }
@@ -194,26 +203,35 @@ function tale_food_distance (point_l, point_r, point_u, point_d) {
   return [0, 0, 0]
 }
 
-function countBlocks (point) {
+function countBlocks (point, emptyRoom, food_found, tale_found, idx) {
   let freeSpace = 1
-  let food_found = 0
-  let tale_found = 0
+  let food_dist = 0
+  let tale_dist = 0
   let row = point.y / blockSize
   let col = point.x / blockSize
   if (isPointInArray(snakeBody.slice(0, -1), point)) {
     // is in body
     // console.log('Is in body')
-    return [0, food_found, tale_found]
+    emptyRoom[idx] = 0
+    food_found[idx] = food_dist
+    tale_found[idx] = tale_dist
+    return
   }
 
   if (isPointInArray(snakeBody.slice(-1), point)) {
     // is the tale
     // console.log('Is tale')
-    return [1, food_found, 1]
+    emptyRoom[idx] = 1
+    food_found[idx] = food_dist
+    tale_found[idx] = 1
+    return
   }
   if (is_collision(point)) {
     // console.log('            not safe\n')
-    return [0, food_found, tale_found]
+    emptyRoom[idx] = 0
+    food_found[idx] = food_dist
+    tale_found[idx] = tale_dist
+    return
   }
 
   let visited = new Visited_blocks()
@@ -223,13 +241,13 @@ function countBlocks (point) {
     visited.setVal(r, c, index + 2)
   }
   if (point.x == food.x && point.y == food.y) {
-    food_found = 1
+    food_dist = 1
   }
 
   //breadth search first
   let bodyParts = [new BodyPart_distance(point, 1)]
   visited.setVal(row, col, 1)
-  while (bodyParts.length > 0 && (tale_found == 0 || food_found == 0)) {
+  while (bodyParts.length > 0 && (tale_dist == 0 || food_dist == 0)) {
     let currBodyPart = bodyParts.shift()
     let ziparray = zip([1, 0, -1, 0], [0, 1, 0, -1])
 
@@ -237,20 +255,20 @@ function countBlocks (point) {
       let r = ziparray[index][1]
       let c = ziparray[index][0]
       if (
-        tale_found == 0 &&
+        tale_dist == 0 &&
         snakeBody.slice(-1)[0].x == (currBodyPart.col + c) * blockSize &&
         snakeBody.slice(-1)[0].y == (currBodyPart.row + r) * blockSize
       ) {
-        tale_found = currBodyPart.distance
+        tale_dist = currBodyPart.distance
         freeSpace += 1
       }
       if (isSafe(currBodyPart.row + r, currBodyPart.col + c, visited)) {
         if (
-          food_found == 0 &&
+          food_dist == 0 &&
           food.x == (currBodyPart.col + c) * blockSize &&
           food.y == (currBodyPart.row + r) * blockSize
         ) {
-          food_found = currBodyPart.distance
+          food_dist = currBodyPart.distance
         }
         visited.setVal(currBodyPart.row + r, currBodyPart.col + c, 1)
         freeSpace += 1
@@ -266,7 +284,9 @@ function countBlocks (point) {
       }
     }
   }
-  return [freeSpace, food_found, tale_found]
+  emptyRoom[idx] = freeSpace
+  food_found[idx] = food_dist
+  tale_found[idx] = tale_dist
 }
 
 function isSafe (row, col, visited) {

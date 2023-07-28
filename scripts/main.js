@@ -81,7 +81,7 @@ window.onload = function () {
   controls.height = board.height / 2
   controls.width = board.width / 2
   contextControls = controls.getContext('2d')
-  // controls.addEventListener('mousedown', ButtonMousedown)
+
   controls.addEventListener('pointerdown', ButtonMousedown)
   controls.addEventListener('mouseup', resetArrows)
   controls.addEventListener('pointerleave', resetArrows)
@@ -103,15 +103,13 @@ window.onload = function () {
   sliderSpeed.addEventListener('input', changeSpeed)
   speedValueText = document.getElementById('speedvalue')
 
-  /** Creates the session and load the model to inference */
-  async function createSession () {
-    try {
-      // create a new session and load the specific model.
-      session = await ort.InferenceSession.create(modelUrl)
-    } catch (e) {
-      document.write(`failed to createSession ONNX: ${e}.`)
-    }
-  }
+  getSpeedValue()
+  drawControls()
+  createSession()
+}
+
+/**Gets speed value from localStorage*/
+function getSpeedValue (params) {
   // localStorage.removeItem("speed")
   gameSpeedStorage = localStorage.getItem('speed')
   if (gameSpeedStorage == null) {
@@ -120,11 +118,19 @@ window.onload = function () {
     gameSpeed = 1000 / gameSpeedStorage
   }
   sliderSpeed.value = parseInt(1000 / gameSpeed)
+}
 
-  drawControls()
-  createSession()
-  myInterval = setInterval(update, gameSpeed)
-  reset()
+/** Creates the session and load the model to inference */
+async function createSession () {
+  console.log('Creating session')
+  try {
+    // create a new session and load the specific model.
+    session = await ort.InferenceSession.create(modelUrl)
+    console.log('Session created')
+    reset()
+  } catch (e) {
+    document.write(`failed to createSession ONNX: ${e}.`)
+  }
 }
 
 /** Resets the game to initial conditions */
@@ -140,7 +146,6 @@ function reset () {
     new Point([head.x, head.y + blockSize * 2]),
     new Point([head.x, head.y + blockSize * 3])
   ]
-
   context.fillStyle = boardColor
   context.fillRect(0, 0, board.width, board.height)
   newFoodPosition()
@@ -151,21 +156,17 @@ function reset () {
   scoreBoard.innerHTML = 'Score: ' + score
   gameSpeed = 1000 / sliderSpeed.value
   speedValueText.innerHTML = 'Speed: ' + sliderSpeed.value
+  myInterval = setInterval(update, gameSpeed)
 }
 
 function update () {
+  console.log('    Updating')
   if (currDirection.x != 0 || currDirection.y != 0) {
-    // console.log('    Updating')
-
     if (gameOver) {
       alert('Game Over')
       reset()
       return
     }
-
-    // Background of the Game
-    context.fillStyle = boardColor
-    context.fillRect(0, 0, board.width, board.height)
 
     // update eated food
     for (let n = 0; n < food_eated.length; n++) {
@@ -186,16 +187,21 @@ function update () {
       if (boardSize > snakeBody.length) {
         food_eated.unshift(-1)
         newFoodPosition()
-        drawFood()
+        // drawFood()
       } else {
-        alert('Mission accomplished!')
-        reset()
+        clearInterval(myInterval)
+        setTimeout(() => {
+          alert('Mission accomplished!')
+          reset()
+        }, 50)
         return
       }
     } else {
       snakeBody.pop() //moves the tale
     }
-
+    // Background of the Game
+    context.fillStyle = boardColor
+    context.fillRect(0, 0, board.width, board.height)
     drawSnakeBody()
     drawFood()
 
@@ -229,19 +235,23 @@ function update () {
 
 /**Manual Movement of the Snake whit addEventListener*/
 function changeDirection (e) {
-  console.log('Changing Direction')
-  if (e.code == 'ArrowUp' && snakeBody[1].y != head.y - blockSize) {
-    pressArrows(arrowUp)
-    currDirection = directions.up
-  } else if (e.code == 'ArrowDown' && snakeBody[1].y != head.y + blockSize) {
-    pressArrows(arrowDown)
-    currDirection = directions.down
-  } else if (e.code == 'ArrowLeft' && snakeBody[1].x != head.x - blockSize) {
-    pressArrows(arrowLeft)
-    currDirection = directions.left
-  } else if (e.code == 'ArrowRight' && snakeBody[1].x != head.x + blockSize) {
-    pressArrows(arrowRight)
-    currDirection = directions.right
+  try {
+    console.log('Changing Direction')
+    if (e.code == 'ArrowUp' && snakeBody[1].y != head.y - blockSize) {
+      pressArrows(arrowUp)
+      currDirection = directions.up
+    } else if (e.code == 'ArrowDown' && snakeBody[1].y != head.y + blockSize) {
+      pressArrows(arrowDown)
+      currDirection = directions.down
+    } else if (e.code == 'ArrowLeft' && snakeBody[1].x != head.x - blockSize) {
+      pressArrows(arrowLeft)
+      currDirection = directions.left
+    } else if (e.code == 'ArrowRight' && snakeBody[1].x != head.x + blockSize) {
+      pressArrows(arrowRight)
+      currDirection = directions.right
+    }
+  } catch (error) {
+    console.log(error.message, ' System loading!')
   }
 }
 

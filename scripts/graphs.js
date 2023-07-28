@@ -1,13 +1,12 @@
 /**Randomly place food*/
 function newFoodPosition () {
-  console.log('newFoodPosition')
+  // console.log('newFoodPosition')
   if (boardSize > snakeBody.length) {
     while (true) {
       food.x = Math.floor(Math.random() * boardCols) * blockSize
       food.y = Math.floor(Math.random() * boardRows) * blockSize
       if (isPointInArray(snakeBody, food)) {
         // food on snake body
-        console.log('new food on body')
       } else {
         break
       }
