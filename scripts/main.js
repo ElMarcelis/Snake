@@ -62,6 +62,7 @@ let arrowDown = new Path2D()
 let arrowUp = new Path2D()
 let arrowRight = new Path2D()
 
+/** @type {HTMLInputElement} */
 let sliderSpeed
 let speedValueText
 let myInterval
@@ -101,8 +102,10 @@ window.onload = function () {
     switchClass.item(0).addEventListener('pointerout', toogleAIassistance)
   }
   scoreBoard = document.getElementById('score')
-  sliderSpeed = document.getElementById('speed')
+  sliderSpeed = document.getElementById('rangespeed')
   sliderSpeed.addEventListener('input', changeSpeed)
+  sliderSpeed.style.width = board.width * 0.5 + "px" // "400px"
+
   speedValueText = document.getElementById('speedvalue')
 
   getSpeedValue()
@@ -113,9 +116,9 @@ window.onload = function () {
 /**Gets speed value from localStorage*/
 function getSpeedValue (params) {
   // localStorage.removeItem("speed")
-  gameSpeedStorage = localStorage.getItem('speed')
+  gameSpeedStorage = localStorage.getItem('rangespeed')
   if (gameSpeedStorage == null) {
-    localStorage.setItem('speed', parseInt(1000 / gameSpeed))
+    localStorage.setItem('rangespeed', parseInt(1000 / gameSpeed))
   } else {
     gameSpeed = 1000 / gameSpeedStorage
   }
@@ -165,7 +168,7 @@ function update () {
   // console.log('    Updating')
   if (currDirection.x != 0 || currDirection.y != 0) {
     if (gameOver) {
-      drawWinnerText("Game Over")
+      drawWinnerText('Game Over')
       clearInterval(myInterval)
       setTimeout(() => {
         reset()
@@ -188,7 +191,7 @@ function update () {
     if (head.x == food.x && head.y == food.y) {
       //It´s eating food
       iteration = []
-      iterating =false
+      iterating = false
       score += 1
       scoreBoard.innerHTML = 'Score: ' + score
       if (boardSize > snakeBody.length) {
@@ -196,7 +199,7 @@ function update () {
         newFoodPosition()
         // drawFood()
       } else {
-        drawWinnerText("WINNER!")
+        drawWinnerText('WINNER!')
         clearInterval(myInterval)
         setTimeout(() => {
           reset()
@@ -337,7 +340,7 @@ function changeSpeed (e) {
   clearInterval(myInterval)
   myInterval = setInterval(update, gameSpeed)
   speedValueText.innerHTML = 'Speed: ' + this.value
-  localStorage.setItem('speed', parseInt(e.target.value))
+  localStorage.setItem('rangespeed', parseInt(e.target.value))
 }
 
 function pressArrows (arrow) {
@@ -353,25 +356,4 @@ function toogleAIassistance (e) {
   } else {
     switchOnOff.checked = true
   }
-}
-
-function drawWinnerText (text) {
-  let fontSize = board.width / 6
-  gameContext.font = `${fontSize}px sans-serif`
-  gameContext.textAlign = 'center'
-  gameContext.lineWidth = blockSize / 8
-
-  gameContext.strokeStyle = 'yellow'
-  gameContext.strokeText(
-    text,
-    board.width / 2,
-    (board.height + fontSize / 2) / 2
-  )
-
-  gameContext.fillStyle = 'black'
-  gameContext.fillText(
-    text,
-    board.width / 2,
-    (board.height + fontSize / 2) / 2
-  )
 }

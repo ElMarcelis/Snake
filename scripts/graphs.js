@@ -355,3 +355,24 @@ function drawArrow (arrow, startX, startY, centerX, centerY, endX, endY) {
 function toRadians (deg) {
   return (deg * Math.PI) / 180
 }
+
+function drawWinnerText (text) {
+  let fontSize = board.width / 6
+  gameContext.font = `${fontSize}px sans-serif`
+  gameContext.textAlign = 'center'
+  gameContext.lineWidth = blockSize / 8
+
+  gameContext.strokeStyle = 'yellow'
+  gameContext.strokeText(
+    text,
+    board.width / 2,
+    (board.height + fontSize / 2) / 2
+  )
+
+  gameContext.fillStyle = 'black'
+  gameContext.fillText(
+    text,
+    board.width / 2,
+    (board.height + fontSize / 2) / 2
+  )
+}
