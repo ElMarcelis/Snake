@@ -228,7 +228,9 @@ function tale_food_distance (point_l, point_r, point_u, point_d) {
       return bestMove
     }
   }
-
+  if (iterating){
+    //especial movement when iterating
+  }
   return [0, 0, 0]
 }
 
