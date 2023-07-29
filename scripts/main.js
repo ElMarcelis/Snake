@@ -66,6 +66,7 @@ let sliderSpeed
 let speedValueText
 let myInterval
 let iteration = []
+let iterating = false
 
 window.onload = function () {
   // Set board height and width
@@ -187,6 +188,7 @@ function update () {
     if (head.x == food.x && head.y == food.y) {
       //It´s eating food
       iteration = []
+      iterating =false
       score += 1
       scoreBoard.innerHTML = 'Score: ' + score
       if (boardSize > snakeBody.length) {
@@ -213,6 +215,7 @@ function update () {
         ) {
           console.log('*************** iterating ***************')
           iteration = []
+          iterating = true
           clearInterval(myInterval)
           reset()
         }
