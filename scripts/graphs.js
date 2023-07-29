@@ -17,23 +17,23 @@ function newFoodPosition () {
 /** Draws the food and reflection*/
 function drawFood () {
   // console.log('        Drawing food')
-  context.fillStyle = 'red'
-  context.beginPath()
-  context.arc(
+  gameContext.fillStyle = 'red'
+  gameContext.beginPath()
+  gameContext.arc(
     food.x + blockSize / 2,
     food.y + blockSize / 2,
     blockSize / 2,
     0,
     2 * Math.PI
   )
-  context.fill()
+  gameContext.fill()
 
   drawReflection(food.x + blockSize / 2, food.y + blockSize / 2, blockSize / 2)
 
   //leaf of the food
-  context.fillStyle = 'rgb(60 253 21)'
-  context.beginPath()
-  context.ellipse(
+  gameContext.fillStyle = 'rgb(60 253 21)'
+  gameContext.beginPath()
+  gameContext.ellipse(
     food.x + blockSize / 2,
     food.y - blockSize / 6,
     blockSize / 6.5,
@@ -42,21 +42,21 @@ function drawFood () {
     0,
     2 * Math.PI
   )
-  context.fill()
+  gameContext.fill()
 }
 
 /**Draws light reflection on the surface*/
 function drawReflection (centerX, centerY, radius) {
-  context.fillStyle = 'white'
-  context.beginPath()
-  context.arc(
+  gameContext.fillStyle = 'white'
+  gameContext.beginPath()
+  gameContext.arc(
     centerX - radius / 3.5,
     centerY - radius / 3.5,
     radius / 2.5,
     0,
     2 * Math.PI
   )
-  context.fill()
+  gameContext.fill()
 }
 
 /** Color of body part */
@@ -86,16 +86,16 @@ function drawSnakeBody () {
     size = 1 - i * 0.1
     if (i > 0) {
       //body part
-      context.fillStyle = bodyPartColor
-      context.fillRect(snakeBody[i].x, snakeBody[i].y, blockSize, blockSize)
+      gameContext.fillStyle = bodyPartColor
+      gameContext.fillRect(snakeBody[i].x, snakeBody[i].y, blockSize, blockSize)
       //body partcircle
-      context.fillStyle = circColor(variation, i)
+      gameContext.fillStyle = circColor(variation, i)
       if (snakeBody.length - i <= 3) {
         // Tale
         minSize -= 0.1
         minMargin += 0.05
-        context.fillStyle = 'rgb(253 83 21)'
-        context.fillRect(
+        gameContext.fillStyle = 'rgb(253 83 21)'
+        gameContext.fillRect(
           snakeBody[i].x + blockSize * minMargin,
           snakeBody[i].y + blockSize * minMargin,
           blockSize * minSize,
@@ -107,15 +107,15 @@ function drawSnakeBody () {
           //food in the belly
           size = 1
         }
-        context.beginPath()
-        context.arc(
+        gameContext.beginPath()
+        gameContext.arc(
           snakeBody[i].x + blockSize / 2,
           snakeBody[i].y + blockSize / 2,
           (blockSize * Math.max(size, minSize)) / 2,
           0,
           2 * Math.PI
         )
-        context.fill()
+        gameContext.fill()
 
         if (size == 1) {
           //food in the belly
@@ -212,20 +212,20 @@ function drawSnakeHead () {
       break
   }
   // Drawing neck
-  context.fillStyle = neckColor
-  context.fillRect(neckX, neckY, neckWidth, neckHeight)
+  gameContext.fillStyle = neckColor
+  gameContext.fillRect(neckX, neckY, neckWidth, neckHeight)
 
   // face
-  context.fillStyle = 'rgb(253 83 21)'
-  context.beginPath()
-  context.arc(
+  gameContext.fillStyle = 'rgb(253 83 21)'
+  gameContext.beginPath()
+  gameContext.arc(
     head.x + blockSize / 2,
     head.y + blockSize / 2,
     blockSize / 2,
     0,
     2 * Math.PI
   )
-  context.fill()
+  gameContext.fill()
 
   drawEye(eyeRX, eyeRY, irisSize, pupilSize)
   drawEye(eyeLX, eyeLY, irisSize, pupilSize)
@@ -234,28 +234,28 @@ function drawSnakeHead () {
 /**Draws an eye  */
 function drawEye (eyeX, eyeY, irisSize, pupilSize) {
   //iris
-  context.fillStyle = 'rgb(247 244 22)'
-  context.beginPath()
-  context.arc(
+  gameContext.fillStyle = 'rgb(247 244 22)'
+  gameContext.beginPath()
+  gameContext.arc(
     head.x + blockSize * eyeX,
     head.y + blockSize * eyeY,
     blockSize * irisSize,
     0,
     2 * Math.PI
   )
-  context.fill()
+  gameContext.fill()
 
   //Pupil
-  context.fillStyle = 'black'
-  context.beginPath()
-  context.arc(
+  gameContext.fillStyle = 'black'
+  gameContext.beginPath()
+  gameContext.arc(
     head.x + blockSize * eyeX,
     head.y + blockSize * eyeY,
     blockSize * pupilSize,
     0,
     2 * Math.PI
   )
-  context.fill()
+  gameContext.fill()
 
   drawReflection(
     head.x + blockSize * eyeX,

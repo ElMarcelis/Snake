@@ -20,7 +20,7 @@ var boardColor = 'rgb(26 24 26)'
 /** @type {HTMLCanvasElement} */
 var board
 /** @type {CanvasRenderingContext2D} */
-var context
+var gameContext
 /**  @type {box} */
 let switchOnOff
 let switchClass
@@ -65,6 +65,7 @@ let arrowRight = new Path2D()
 let sliderSpeed
 let speedValueText
 let myInterval
+let iteration = []
 
 window.onload = function () {
   // Set board height and width
@@ -76,7 +77,7 @@ window.onload = function () {
   board.height = blockSize * boardRows
   board.width = blockSize * boardCols
   console.log('board.height', board.height)
-  context = board.getContext('2d')
+  gameContext = board.getContext('2d')
   controls = document.getElementById('controls')
   controls.height = board.height / 2
   controls.width = board.width / 2
@@ -137,7 +138,7 @@ async function createSession () {
 function reset () {
   console.log('Reseting')
   currDirection = { x: 0, y: 0 } //starts and waits for a new direction
-  // currDirection = directions.up //auto restart
+  currDirection = directions.up //auto restart
   head.x = blockSize * (boardCols / 2 - 1)
   head.y = blockSize * (boardRows - 4)
   snakeBody = [
@@ -146,8 +147,8 @@ function reset () {
     new Point([head.x, head.y + blockSize * 2]),
     new Point([head.x, head.y + blockSize * 3])
   ]
-  context.fillStyle = boardColor
-  context.fillRect(0, 0, board.width, board.height)
+  gameContext.fillStyle = boardColor
+  gameContext.fillRect(0, 0, board.width, board.height)
   newFoodPosition()
   drawFood()
   drawSnakeBody()
@@ -160,11 +161,14 @@ function reset () {
 }
 
 function update () {
-  console.log('    Updating')
+  // console.log('    Updating')
   if (currDirection.x != 0 || currDirection.y != 0) {
     if (gameOver) {
-      alert('Game Over')
-      reset()
+      drawWinnerText("Game Over")
+      clearInterval(myInterval)
+      setTimeout(() => {
+        reset()
+      }, 4500)
       return
     }
 
@@ -182,6 +186,7 @@ function update () {
     snakeBody.unshift(new Point(head.x, head.y)) //moves the head to the next position
     if (head.x == food.x && head.y == food.y) {
       //It´s eating food
+      iteration = []
       score += 1
       scoreBoard.innerHTML = 'Score: ' + score
       if (boardSize > snakeBody.length) {
@@ -189,19 +194,33 @@ function update () {
         newFoodPosition()
         // drawFood()
       } else {
+        drawWinnerText("WINNER!")
         clearInterval(myInterval)
         setTimeout(() => {
-          alert('Mission accomplished!')
           reset()
-        }, 50)
+        }, 4500)
         return
       }
     } else {
       snakeBody.pop() //moves the tale
+      iteration.unshift(new Point(head.x, head.y))
+
+      if (iteration.length >= snakeBody.length * 2) {
+        if (
+          JSON.stringify(
+            iteration.slice(snakeBody.length, 2 * snakeBody.length)
+          ) == JSON.stringify(snakeBody)
+        ) {
+          console.log('*************** iterating ***************')
+          iteration = []
+          clearInterval(myInterval)
+          reset()
+        }
+      }
     }
     // Background of the Game
-    context.fillStyle = boardColor
-    context.fillRect(0, 0, board.width, board.height)
+    gameContext.fillStyle = boardColor
+    gameContext.fillRect(0, 0, board.width, board.height)
     drawSnakeBody()
     drawFood()
 
@@ -331,4 +350,25 @@ function toogleAIassistance (e) {
   } else {
     switchOnOff.checked = true
   }
+}
+
+function drawWinnerText (text) {
+  let fontSize = board.width / 6
+  gameContext.font = `${fontSize}px sans-serif`
+  gameContext.textAlign = 'center'
+  gameContext.lineWidth = blockSize / 8
+
+  gameContext.strokeStyle = 'yellow'
+  gameContext.strokeText(
+    text,
+    board.width / 2,
+    (board.height + fontSize / 2) / 2
+  )
+
+  gameContext.fillStyle = 'black'
+  gameContext.fillText(
+    text,
+    board.width / 2,
+    (board.height + fontSize / 2) / 2
+  )
 }
