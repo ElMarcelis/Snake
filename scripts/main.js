@@ -71,15 +71,15 @@ window.onload = function () {
   // Set board height and width
   board = document.getElementById('board')
   blockSize = Math.floor(
-    (Math.min(window.innerHeight, window.innerWidth) / boardRows) * 0.98
+    (Math.min(window.innerHeight, window.innerWidth) / boardCols) * 0.98
   )
-  blockSize -= blockSize % boardRows
+  blockSize -= blockSize % boardCols
   board.height = blockSize * boardRows
   board.width = blockSize * boardCols
   console.log('board.height', board.height)
   gameContext = board.getContext('2d')
   controls = document.getElementById('controls')
-  controls.height = board.height / 2
+  controls.height = board.width / 2
   controls.width = board.width / 2
   contextControls = controls.getContext('2d')
 
@@ -147,6 +147,9 @@ function reset () {
   currDirection = directions.up //auto restart
   head.x = blockSize * (boardCols / 2 - 1)
   head.y = blockSize * (boardRows - 4)
+  food_eated = []
+  iteration = []
+  iterating = false
   snakeBody = [
     new Point([head.x, head.y]),
     new Point([head.x, head.y + blockSize * 1]),
@@ -180,36 +183,35 @@ function update () {
     head.y += currDirection.y * blockSize //updating Snake position in Y coordinate.
 
     snakeBody.unshift(new Point(head.x, head.y)) //moves the head to the next position
-    if (head.x == food.x && head.y == food.y) {
-      //It´s eating food
-      iteration = []
-      iterating = false
-      score += 1
-      scoreBoard.innerHTML = 'Score: ' + score
-      if (boardSize > snakeBody.length) {
+
+    if (boardSize == snakeBody.length) {
+      winner()
+      return
+    } else {
+      if (head.x == food.x && head.y == food.y) {
+        //It´s eating food
+        iteration = []
+        iterating = false
+        score += 1
+        scoreBoard.innerHTML = 'Score: ' + score
         food_eated.unshift(-1)
         newFoodPosition()
       } else {
-        drawWinnerText('WINNER!')
-        setTimeout(() => {
-          reset()
-        }, 4500)
-        return
-      }
-    } else {
-      snakeBody.pop() //moves the tale
-      iteration.unshift(new Point(head.x, head.y))
-
-      if (iteration.length >= snakeBody.length * 2) {
-        if (
-          JSON.stringify(
-            iteration.slice(snakeBody.length, 2 * snakeBody.length)
-          ) == JSON.stringify(snakeBody)
-        ) {
-          console.log('*************** iterating ***************')
-          iteration = []
-          iterating = true
-          reset()
+        snakeBody.pop() //moves the tale
+        iteration.unshift(new Point(head.x, head.y))
+        if (iteration.length >= snakeBody.length * 2) {
+          if (
+            JSON.stringify(
+              iteration.slice(snakeBody.length, 2 * snakeBody.length)
+            ) == JSON.stringify(snakeBody)
+          ) {
+            console.log('*************** iterating ***************')
+            // iteration = []
+            iterating = true
+          }
+        }
+        if (iteration.length >= snakeBody.length * 15) {
+          gameOver()
           return
         }
       }
@@ -250,6 +252,19 @@ function update () {
 
 function gameOver () {
   drawWinnerText('Game Over')
+  setTimeout(() => {
+    reset()
+  }, 4500)
+}
+
+function winner () {
+  gameContext.fillStyle = boardColor
+  gameContext.fillRect(0, 0, board.width, board.height)
+  score += 1
+  scoreBoard.innerHTML = 'Score: ' + score
+  food_eated.unshift(-1)
+  drawSnakeBody()
+  drawWinnerText('WINNER!')
   setTimeout(() => {
     reset()
   }, 4500)

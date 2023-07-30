@@ -9,9 +9,9 @@ class BodyPart_distance {
 class Visited_blocks {
   constructor () {
     this.visited = []
-    for (let cols = 0; cols < boardCols; cols++) {
+    for (let cols = 0; cols < boardRows; cols++) {
       let row = []
-      for (let rows = 0; rows < boardRows; rows++) {
+      for (let rows = 0; rows < boardCols; rows++) {
         row.push(0)
       }
       this.visited.push(row)
@@ -138,6 +138,7 @@ function tale_food_distance (point_l, point_r, point_u, point_d) {
   let tale_found = [0, 0, 0]
   let tale_near = false
   let points = [point_r, point_d, point_l, point_u]
+  let searchTale = -1
 
   if (isPointInArray(points, snakeBody.slice(-1)[0])) {
     tale_near = true
@@ -169,30 +170,51 @@ function tale_food_distance (point_l, point_r, point_u, point_d) {
       isPointInArray(snakeBody.slice(0, -1), points[calcMod(idx_dir - 1, 4)]) ==
         false)
   ) {
-    countBlocks(
-      // straight ahead
-      points[idx_dir],
-      emptyRoom,
-      food_found,
-      tale_found,
-      0
-    )
-    countBlocks(
-      // Turning right
-      points[calcMod(idx_dir + 1, 4)],
-      emptyRoom,
-      food_found,
-      tale_found,
-      1
-    )
-    countBlocks(
-      // Turning left
-      points[calcMod(idx_dir - 1, 4)],
-      emptyRoom,
-      food_found,
-      tale_found,
-      2
-    )
+    if (iterating) {
+      searchTale = -2
+    }
+    while (true) {
+      countBlocks(
+        // straight ahead
+        points[idx_dir],
+        emptyRoom,
+        food_found,
+        tale_found,
+        0,
+        searchTale
+      )
+      countBlocks(
+        // Turning right
+        points[calcMod(idx_dir + 1, 4)],
+        emptyRoom,
+        food_found,
+        tale_found,
+        1,
+        searchTale
+      )
+      countBlocks(
+        // Turning left
+        points[calcMod(idx_dir - 1, 4)],
+        emptyRoom,
+        food_found,
+        tale_found,
+        2,
+        searchTale
+      )
+      if (searchTale == -1) {
+        break
+      } else {
+        if (
+          Math.max(...tale_found) == 1 &&
+          food_found[tale_found.indexOf(Math.max(...tale_found))] == Infinity
+        ) {
+          if (Math.random() > 0.33) {
+            break
+          }
+        }
+        searchTale = -1
+      }
+    }
   }
   if (Math.max(...tale_found) > 0) {
     // choose the largest path to the tale
@@ -228,33 +250,37 @@ function tale_food_distance (point_l, point_r, point_u, point_d) {
       return bestMove
     }
   }
-  if (iterating){
-    //especial movement when iterating
-  }
+
   return [0, 0, 0]
 }
 
-function countBlocks (point, emptyRoom, food_found, tale_found, idx) {
+function countBlocks (
+  point,
+  emptyRoom,
+  food_found,
+  tale_found,
+  idx,
+  searchTale
+) {
   let freeSpace = 1
   let food_dist = Infinity
   let tale_dist = 0
   let row = point.y / blockSize
   let col = point.x / blockSize
-  if (isPointInArray(snakeBody.slice(0, -1), point)) {
-    // is in body
-    // console.log('Is in body')
-    emptyRoom[idx] = 0
-    food_found[idx] = Infinity
-    tale_found[idx] = tale_dist
-    return
-  }
-
-  if (isPointInArray(snakeBody.slice(-1), point)) {
+  if (JSON.stringify(snakeBody.slice(searchTale)[0]) == JSON.stringify(point)) {
     // is the tale
     // console.log('Is tale')
     emptyRoom[idx] = 1
     food_found[idx] = Infinity
     tale_found[idx] = 1
+    return
+  }
+  if (isPointInArray(snakeBody, point)) {
+    // is in body
+    // console.log('Is in body')
+    emptyRoom[idx] = 0
+    food_found[idx] = Infinity
+    tale_found[idx] = tale_dist
     return
   }
   if (is_collision(point)) {
@@ -287,8 +313,9 @@ function countBlocks (point, emptyRoom, food_found, tale_found, idx) {
       let c = ziparray[index][0]
       if (
         tale_dist == 0 &&
-        snakeBody.slice(-1)[0].x == (currBodyPart.col + c) * blockSize &&
-        snakeBody.slice(-1)[0].y == (currBodyPart.row + r) * blockSize
+        snakeBody.slice(searchTale)[0].x ==
+          (currBodyPart.col + c) * blockSize &&
+        snakeBody.slice(searchTale)[0].y == (currBodyPart.row + r) * blockSize
       ) {
         tale_dist = currBodyPart.distance
         freeSpace += 1
