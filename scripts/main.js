@@ -48,7 +48,6 @@ let carrousel = [
 ]
 let currDirection = { x: 0, y: 0 }
 let snakeBody = []
-var gameOver = false
 let modelUrl = './models/model.onnx'
 let session = null
 
@@ -65,7 +64,6 @@ let arrowRight = new Path2D()
 /** @type {HTMLInputElement} */
 let sliderSpeed
 let speedValueText
-let myInterval
 let iteration = []
 let iterating = false
 
@@ -104,7 +102,7 @@ window.onload = function () {
   scoreBoard = document.getElementById('score')
   sliderSpeed = document.getElementById('rangespeed')
   sliderSpeed.addEventListener('input', changeSpeed)
-  sliderSpeed.style.width = board.width * 0.5 + "px" // "400px"
+  sliderSpeed.style.width = board.width * 0.5 + 'px' // "400px"
 
   speedValueText = document.getElementById('speedvalue')
 
@@ -123,6 +121,10 @@ function getSpeedValue (params) {
     gameSpeed = 1000 / gameSpeedStorage
   }
   sliderSpeed.value = parseInt(1000 / gameSpeed)
+}
+
+function loop (time) {
+  window.setTimeout(update, parseInt(time))
 }
 
 /** Creates the session and load the model to inference */
@@ -156,26 +158,16 @@ function reset () {
   newFoodPosition()
   drawFood()
   drawSnakeBody()
-  gameOver = false
   score = 0
   scoreBoard.innerHTML = 'Score: ' + score
   gameSpeed = 1000 / sliderSpeed.value
   speedValueText.innerHTML = 'Speed: ' + sliderSpeed.value
-  myInterval = setInterval(update, gameSpeed)
+  loop(gameSpeed)
 }
 
 function update () {
   // console.log('    Updating')
   if (currDirection.x != 0 || currDirection.y != 0) {
-    if (gameOver) {
-      drawWinnerText('Game Over')
-      clearInterval(myInterval)
-      setTimeout(() => {
-        reset()
-      }, 4500)
-      return
-    }
-
     // update eated food
     for (let n = 0; n < food_eated.length; n++) {
       food_eated[n] += 2
@@ -197,10 +189,8 @@ function update () {
       if (boardSize > snakeBody.length) {
         food_eated.unshift(-1)
         newFoodPosition()
-        // drawFood()
       } else {
         drawWinnerText('WINNER!')
-        clearInterval(myInterval)
         setTimeout(() => {
           reset()
         }, 4500)
@@ -219,8 +209,8 @@ function update () {
           console.log('*************** iterating ***************')
           iteration = []
           iterating = true
-          clearInterval(myInterval)
           reset()
+          return
         }
       }
     }
@@ -238,14 +228,14 @@ function update () {
       head.y >= boardRows * blockSize
     ) {
       console.log('Game Over board')
-      gameOver = true
+      gameOver()
       return
     }
     // Check if head is Snake eats own body
     for (let i = 1; i < snakeBody.length; i++) {
       if (head.x == snakeBody[i].x && head.y == snakeBody[i].y) {
         console.log('Game Over body')
-        gameOver = true
+        gameOver()
         return
       }
     }
@@ -253,9 +243,16 @@ function update () {
     if (switchOnOff.checked) {
       // AI next move
       agent()
-    } else {
     }
+    loop(gameSpeed)
   }
+}
+
+function gameOver () {
+  drawWinnerText('Game Over')
+  setTimeout(() => {
+    reset()
+  }, 4500)
 }
 
 /**Manual Movement of the Snake whit addEventListener*/
@@ -337,8 +334,6 @@ function ButtonMousedown (e) {
 function changeSpeed (e) {
   gameSpeed = 1000 / e.target.value
   console.log('speed', this.value)
-  clearInterval(myInterval)
-  myInterval = setInterval(update, gameSpeed)
   speedValueText.innerHTML = 'Speed: ' + this.value
   localStorage.setItem('rangespeed', parseInt(e.target.value))
 }
