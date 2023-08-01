@@ -14,7 +14,7 @@ function newFoodPosition () {
   }
 }
 
-/** Draws the food and reflection*/
+/** Draws the food*/
 function drawFood () {
   // console.log('        Drawing food')
   gameContext.fillStyle = 'red'
@@ -231,7 +231,7 @@ function drawSnakeHead () {
   drawEye(eyeLX, eyeLY, irisSize, pupilSize)
 }
 
-/**Draws an eye  */
+/**Draws an eye*/
 function drawEye (eyeX, eyeY, irisSize, pupilSize) {
   //iris
   gameContext.fillStyle = 'rgb(247 244 22)'
@@ -266,9 +266,9 @@ function drawEye (eyeX, eyeY, irisSize, pupilSize) {
 
 /**Draws the control buttons*/
 function drawControls () {
-  var centerX = controls.width / 2
-  var centerY = controls.height / 2
-  var buttonSize = controls.width / 4
+  let centerX = controls.width / 2
+  let centerY = controls.height / 2
+  let buttonSize = controls.width / 4
 
   drawButton(buttonDown, centerX, centerY, 'rgb(244 87 87)', 45, 135)
   drawButton(buttonLeft, centerX, centerY, 'rgb(88 152 243)', 135, 225)
@@ -355,8 +355,8 @@ function drawArrow (arrow, startX, startY, centerX, centerY, endX, endY) {
 function toRadians (deg) {
   return (deg * Math.PI) / 180
 }
-
-function drawWinnerText (text) {
+/**Draws game messages texts in the board*/
+function drawBoardText (text) {
   let fontSize = board.width / 6
   gameContext.font = `${fontSize}px sans-serif`
   gameContext.textAlign = 'center'

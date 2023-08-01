@@ -13,23 +13,23 @@ let blockSize = 100
 let gameSpeed = 1000 / 5
 
 // Set the total number of rows and columns
-var boardRows = 8 //total row number
-var boardCols = 8 //total column number
-var boardSize = boardRows * boardCols
-var boardColor = 'rgb(26 24 26)'
+let boardRows = 8 //total row number
+let boardCols = 8 //total column number
+let boardSize = boardRows * boardCols
+let boardColor = 'rgb(26 24 26)'
 /** @type {HTMLCanvasElement} */
-var board
+let board
 /** @type {CanvasRenderingContext2D} */
-var gameContext
+let gameContext
 /**  @type {box} */
 let switchOnOff
 let switchClass
 let score = 0
 let scoreBoard
 /** @type {CanvasRenderingContext2D} */
-var contextControls
+let contextControls
 /** @type {HTMLCanvasElement} */
-var controls
+let controls
 let neckColor = ''
 let head = new Point(0, 0)
 let food = new Point(0, 0)
@@ -251,7 +251,7 @@ function update () {
 }
 
 function gameOver () {
-  drawWinnerText('Game Over')
+  drawBoardText('Game Over')
   setTimeout(() => {
     reset()
   }, 4500)
@@ -264,7 +264,7 @@ function winner () {
   scoreBoard.innerHTML = 'Score: ' + score
   food_eated.unshift(-1)
   drawSnakeBody()
-  drawWinnerText('WINNER!')
+  drawBoardText('WINNER!')
   setTimeout(() => {
     reset()
   }, 4500)
@@ -294,19 +294,19 @@ function changeDirection (e) {
 
 function ButtonMousedown (e) {
   /** @type {CanvasRenderingContext2D} */
-  var context = e.target.getContext('2d')
-  var coordX =
+  let context = e.target.getContext('2d')
+  let coordX =
     e.offsetX -
     parseInt(
       window.getComputedStyle(controls, null).getPropertyValue('padding-left')
     )
-  var coordY =
+  let coordY =
     e.offsetY -
     parseInt(
       window.getComputedStyle(controls, null).getPropertyValue('padding-left')
     )
 
-  var keyCode = {}
+  let keyCode = {}
 
   if (
     context.isPointInPath(buttonDown, coordX, coordY) ||

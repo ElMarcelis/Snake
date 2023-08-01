@@ -383,7 +383,7 @@ function calcMod (a, b) {
  * @param {Array} b - Array 2
  */
 function zip (a, b) {
-  var c = a.map(function (e, i) {
+  let c = a.map(function (e, i) {
     return [e, b[i]]
   })
   return c
