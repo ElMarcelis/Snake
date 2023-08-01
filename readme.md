@@ -4,12 +4,14 @@ Argumento
 En el juego, el jugador o usuario controla a una serpiente, que vaga alrededor de un plano delimitado, recogiendo alimentos (o algún otro elemento), tratando de evitar golpearse contra paredes que rodean el área de juego o su propia cola. Cada vez que la serpiente se come un pedazo de comida, la cola crece más, provocando que aumente la dificultad del juego. El usuario controla la dirección de la cabeza de la serpiente (arriba, abajo, izquierda o derecha) y el cuerpo de la serpiente la sigue. Además, el jugador no puede detener el movimiento de la serpiente, mientras que el juego está en marcha.
 (https://es.wikipedia.org/wiki/La_serpiente_(videojuego)#)
 
-En esta versión se puede jugar de forma manual o automáticamente con la asistencia de una inteligencia artificial. 
+En esta versión se puede jugar de forma manual o automáticamente con la asistencia de una inteligencia artificial.
+
 La red neuronal está basada en el trabajo de: https://github.com/patrickloeber/snake-ai-pytorch.
 
-El modelo fue entrenado con “entrenamiento por refuerzo”, una algoritmo de aprendizaje automático (machine learning). 
+El modelo fue entrenado con “entrenamiento por refuerzo”, un algoritmo de aprendizaje automático (machine learning). 
 Su principal particularidad es que no requiere datos etiquetados previamente.
-Un agente de software explora un entorno desconocido y determina las acciones a llevar a cabo mediante prueba y error con el fin de maximizar alguna noción de "recompensa".
+
+Un agente de software explora un entorno desconocido y determina las acciones a llevar a cabo mediante prueba y error con el fin de maximizar la "recompensa".
 
 En este caso el agente recibe recompensas cuando la víbora come las frutas y castigos por salirse de los límites del tablero o chocar contra su propio cuerpo.
 
@@ -46,6 +48,7 @@ Funcionamiento:
 Se caga el ONNX Runtime Web (ORT) usando un script tag.
 Posteriormente se crea una sesión para inferencia cargando el modelo entrenado.
 Para cada movimiento se ingresa un array de 14 valores binarios a la sesión y se obtiene un array de 3 valores que indican que acción debe tomar la víbora.
+
 Se ejecuta totalmente del lado del cliente.
 
 Durante el entrenamiento se compara el estado actual de entorno y el estado anterior.
@@ -66,5 +69,5 @@ Cuando se detecta este comportamiento la solución es seguir, cuando sea posible
 ![1](https://github.com/ElMarcelis/Snake/assets/135712335/d9f96549-2e14-4f7c-a252-2b658c5f186d)
 ![2](https://github.com/ElMarcelis/Snake/assets/135712335/e4d777b7-a2e1-4407-bdea-7318ce02ce86)
 ![3](https://github.com/ElMarcelis/Snake/assets/135712335/eeb7496d-fa8e-4987-8a18-4565a4ea860e)
-![4](https://github.com/ElMarcelis/Snake/assets/135712335/7ecef15c-d049-4822-8ba6-4b2e6d351c2c)
+
 
