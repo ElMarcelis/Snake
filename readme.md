@@ -55,7 +55,13 @@ En algunas situaciones una acción puede tener efectos varios pasos en el futuro
 Para esos casos la mejor opción es seguir la cola (último bloque) ya que con cada movimiento de la víbora, la cola se desplaza dejando un espacio disponible hacia donde moverse.
 Para ello se utilizan los últimos tres valores del array de entrada.
 Se calcula la distancia y se indica el camino más largo hasta la cola.
+
 Por último en la etapa final, si quedan espacios aislados separados de la fruta, la víbora tiende a iterar, repitiendo una y otra vez el mismo camino.
 Cuando se detecta este comportamiento la solución es seguir, cuando sea posible, el bloque anterior al último, esto permite desplazar el espacio libre posibilitando un camino diferente y así aumentando la posibilidad de completar el juego.
 
+
+![1](https://github.com/ElMarcelis/Snake/assets/135712335/d9f96549-2e14-4f7c-a252-2b658c5f186d)
+![2](https://github.com/ElMarcelis/Snake/assets/135712335/e4d777b7-a2e1-4407-bdea-7318ce02ce86)
+![3](https://github.com/ElMarcelis/Snake/assets/135712335/eeb7496d-fa8e-4987-8a18-4565a4ea860e)
+![4](https://github.com/ElMarcelis/Snake/assets/135712335/7ecef15c-d049-4822-8ba6-4b2e6d351c2c)
 
