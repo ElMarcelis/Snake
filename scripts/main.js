@@ -206,7 +206,6 @@ function update () {
             ) == JSON.stringify(snakeBody)
           ) {
             console.log('*************** iterating ***************')
-            // iteration = []
             iterating = true
           }
         }
