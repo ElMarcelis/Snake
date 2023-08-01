@@ -4,7 +4,7 @@ Argumento
 En el juego, el jugador o usuario controla a una serpiente, que vaga alrededor de un plano delimitado, recogiendo alimentos (o algún otro elemento), tratando de evitar golpearse contra paredes que rodean el área de juego o su propia cola. Cada vez que la serpiente se come un pedazo de comida, la cola crece más, provocando que aumente la dificultad del juego. El usuario controla la dirección de la cabeza de la serpiente (arriba, abajo, izquierda o derecha) y el cuerpo de la serpiente la sigue. Además, el jugador no puede detener el movimiento de la serpiente, mientras que el juego está en marcha.
 (https://es.wikipedia.org/wiki/La_serpiente_(videojuego)#)
 
-En esta versión se puede jugar de forma manual o automáticamente con la asistencia de una inteligencia artificial 
+En esta versión se puede jugar de forma manual o automáticamente con la asistencia de una inteligencia artificial. 
 La red neuronal está basada en el trabajo de: https://github.com/patrickloeber/snake-ai-pytorch.
 
 El modelo fue entrenado con “entrenamiento por refuerzo”, una algoritmo de aprendizaje automático (machine learning). 

@@ -246,8 +246,9 @@ function update () {
       // AI next move
       agent()
     }
-    loop(gameSpeed)
+    
   }
+  loop(gameSpeed)
 }
 
 function gameOver () {
