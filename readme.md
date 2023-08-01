@@ -39,8 +39,6 @@ Capa de salida:
 2.	Girar a la derecha
 3.	Girara a la izquierda
 
-
-
 El modelo de IA fue entrenado con PyTorch en Google Colab 
 Posteriormente exportado a ONNX (Open Neural Network Exchange), un formato abierto para representar modelos de Deep learning.
 
@@ -50,7 +48,6 @@ Posteriormente se crea una sesión para inferencia cargando el modelo entrenado.
 Para cada movimiento se ingresa un array de 14 valores binarios a la sesión y se obtiene un array de 3 valores que indican que acción debe tomar la víbora.
 Se ejecuta totalmente del lado del cliente.
 
-
 Durante el entrenamiento se compara el estado actual de entorno y el estado anterior.
 Se evalúa el resultado de la acción tomada y se calcula los premios y castigos para esa acción.
 Por este motivo, el modelo solo puede predecir los efectos de una acción en el paso posterior.
@@ -59,6 +56,6 @@ Para esos casos la mejor opción es seguir la cola (último bloque) ya que con c
 Para ello se utilizan los últimos tres valores del array de entrada.
 Se calcula la distancia y se indica el camino más largo hasta la cola.
 Por último en la etapa final, si quedan espacios aislados separados de la fruta, la víbora tiende a iterar, repitiendo una y otra vez el mismo camino.
-Cuando se detecta este comportamiento la solución es seguir, cuando sea posible, el bloque anterior al último, esto permite desplazar el espacio libre posibilitando un camino diferente y así aumentando la posibilid de completar el juego.
+Cuando se detecta este comportamiento la solución es seguir, cuando sea posible, el bloque anterior al último, esto permite desplazar el espacio libre posibilitando un camino diferente y así aumentando la posibilidad de completar el juego.
 
 
