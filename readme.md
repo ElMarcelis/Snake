@@ -59,6 +59,6 @@ Para esos casos la mejor opción es seguir la cola (último bloque) ya que con c
 Para ello se utilizan los últimos tres valores del array de entrada.
 Se calcula la distancia y se indica el camino más largo hasta la cola.
 Por último en la etapa final, si quedan espacios aislados separados de la fruta, la víbora tiende a iterar, repitiendo una y otra vez el mismo camino.
-Cuando se detecta este comportamiento la solución es seguir, cuando sea posible, el bloque anterior al último, esto permite desplazar el espacio libre posibilitando un camino diferente y así aumentando la posibilid de completar el juego 
+Cuando se detecta este comportamiento la solución es seguir, cuando sea posible, el bloque anterior al último, esto permite desplazar el espacio libre posibilitando un camino diferente y así aumentando la posibilid de completar el juego.
 
 

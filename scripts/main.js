@@ -144,7 +144,7 @@ async function createSession () {
 function reset () {
   console.log('Reseting')
   currDirection = { x: 0, y: 0 } //starts and waits for a new direction
-  currDirection = directions.up //auto restart
+  // currDirection = directions.up //auto restart
   head.x = blockSize * (boardCols / 2 - 1)
   head.y = blockSize * (boardRows - 4)
   food_eated = []
