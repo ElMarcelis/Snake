@@ -51,14 +51,17 @@ Se ejecuta totalmente del lado del cliente.
 Durante el entrenamiento se compara el estado actual de entorno y el estado anterior.
 Se evalúa el resultado de la acción tomada y se calcula los premios y castigos para esa acción.
 Por este motivo, el modelo solo puede predecir los efectos de una acción en el paso posterior.
+
 En algunas situaciones una acción puede tener efectos varios pasos en el futuro, dejando a la víbora encerrada y sin opciones.
 Para esos casos la mejor opción es seguir la cola (último bloque) ya que con cada movimiento de la víbora, la cola se desplaza dejando un espacio disponible hacia donde moverse.
 Para ello se utilizan los últimos tres valores del array de entrada.
 Se calcula la distancia y se indica el camino más largo hasta la cola.
 
+![6](https://github.com/ElMarcelis/Snake/assets/135712335/0e5bc765-5ea7-4fd5-9e88-38da0fc14c14)
+![7](https://github.com/ElMarcelis/Snake/assets/135712335/9aa261d6-9e40-4449-8fb3-42fe6296ca43)
+
 Por último en la etapa final, si quedan espacios aislados separados de la fruta, la víbora tiende a iterar, repitiendo una y otra vez el mismo camino.
 Cuando se detecta este comportamiento la solución es seguir, cuando sea posible, el bloque anterior al último, esto permite desplazar el espacio libre posibilitando un camino diferente y así aumentando la posibilidad de completar el juego.
-
 
 ![1](https://github.com/ElMarcelis/Snake/assets/135712335/d9f96549-2e14-4f7c-a252-2b658c5f186d)
 ![2](https://github.com/ElMarcelis/Snake/assets/135712335/e4d777b7-a2e1-4407-bdea-7318ce02ce86)
