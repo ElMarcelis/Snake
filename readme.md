@@ -51,11 +51,11 @@ Para cada movimiento se ingresa un array de 14 valores binarios a la sesión y s
 Se ejecuta totalmente del lado del cliente.
 
 
-Durante el entrenamiento se compara el estado actual de entorno y el  estado anterior.
+Durante el entrenamiento se compara el estado actual de entorno y el estado anterior.
 Se evalúa el resultado de la acción tomada y se calcula los premios y castigos para esa acción.
 Por este motivo, el modelo solo puede predecir los efectos de una acción en el paso posterior.
 En algunas situaciones una acción puede tener efectos varios pasos en el futuro, dejando a la víbora encerrada y sin opciones.
-Para esos casos la mejor opción es seguir la cola (último bloque) ya que con cada movimiento de la víbora, la cola se desplaza dejando un espacio disponible hacia donde moverse. 
+Para esos casos la mejor opción es seguir la cola (último bloque) ya que con cada movimiento de la víbora, la cola se desplaza dejando un espacio disponible hacia donde moverse.
 Para ello se utilizan los últimos tres valores del array de entrada.
 Se calcula la distancia y se indica el camino más largo hasta la cola.
 Por último en la etapa final, si quedan espacios aislados separados de la fruta, la víbora tiende a iterar, repitiendo una y otra vez el mismo camino.
