@@ -250,7 +250,9 @@ function tale_food_distance (point_l, point_r, point_u, point_d) {
       return bestMove
     }
   }
-
+  if (iterating) {
+    //especial movement when iterating
+  }
   return [0, 0, 0]
 }
 
@@ -260,8 +262,7 @@ function countBlocks (
   food_found,
   tale_found,
   idx,
-  searchTale
-) {
+  searchTale) {
   let freeSpace = 1
   let food_dist = Infinity
   let tale_dist = 0
@@ -315,7 +316,7 @@ function countBlocks (
         tale_dist == 0 &&
         snakeBody.slice(searchTale)[0].x ==
           (currBodyPart.col + c) * blockSize &&
-        snakeBody.slice(searchTale)[0].y == (currBodyPart.row + r) * blockSize
+        snakeBody.slice(searchTale)[0].y == (currBodyPart.row + r) * blockSize      
       ) {
         tale_dist = currBodyPart.distance
         freeSpace += 1

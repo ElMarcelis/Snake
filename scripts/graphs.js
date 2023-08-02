@@ -356,23 +356,27 @@ function toRadians (deg) {
   return (deg * Math.PI) / 180
 }
 /**Draws game messages texts in the board*/
-function drawBoardText (text) {
-  let fontSize = board.width / 6
+function drawBoardMessage (text) {
+  let fontSize
+  let textColor
+  let top
+  if (text.length < 10) {
+    fontSize = board.width / 6
+    gameContext.lineWidth = blockSize / 8
+    top = (board.height + fontSize / 2) / 2
+    textColor = 'black'
+  } else {
+    fontSize = board.width / 15
+    gameContext.lineWidth = 1
+    top = fontSize * 2
+    textColor = 'yellow'
+  }
   gameContext.font = `${fontSize}px sans-serif`
   gameContext.textAlign = 'center'
-  gameContext.lineWidth = blockSize / 8
 
   gameContext.strokeStyle = 'yellow'
-  gameContext.strokeText(
-    text,
-    board.width / 2,
-    (board.height + fontSize / 2) / 2
-  )
+  gameContext.strokeText(text, board.width / 2, top)
 
-  gameContext.fillStyle = 'black'
-  gameContext.fillText(
-    text,
-    board.width / 2,
-    (board.height + fontSize / 2) / 2
-  )
+  gameContext.fillStyle = textColor
+  gameContext.fillText(text, board.width / 2, top)
 }

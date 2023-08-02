@@ -97,7 +97,10 @@ window.onload = function () {
     switchClass.item(0).addEventListener('click', function (evt) {
       evt.preventDefault()
     })
-    switchClass.item(0).addEventListener('pointerout', toogleAIassistance)
+    switchClass.item(0).addEventListener('pointerout', () => toogleAIassistance(true))
+  } 
+  else {
+    switchOnOff.addEventListener('click', () => toogleAIassistance(false))
   }
   scoreBoard = document.getElementById('score')
   sliderSpeed = document.getElementById('rangespeed')
@@ -107,14 +110,29 @@ window.onload = function () {
   speedValueText = document.getElementById('speedvalue')
 
   getSpeedValue()
+  getAIAssist()
   drawControls()
   createSession()
 }
 
+function getAIAssist () {
+  let AIAssistStorage = localStorage.getItem('AIAssist')
+  if (AIAssistStorage == null) {
+    localStorage.setItem('AIAssist', true)
+    switchOnOff.checked = true
+  } else {
+    if (AIAssistStorage == 'true') {
+      switchOnOff.checked = true
+    } else {
+      switchOnOff.checked = false
+    }
+  }
+}
+
 /**Gets speed value from localStorage*/
-function getSpeedValue (params) {
+function getSpeedValue () {
   // localStorage.removeItem("speed")
-  gameSpeedStorage = localStorage.getItem('rangespeed')
+  let gameSpeedStorage = localStorage.getItem('rangespeed')
   if (gameSpeedStorage == null) {
     localStorage.setItem('rangespeed', parseInt(1000 / gameSpeed))
   } else {
@@ -145,7 +163,7 @@ function reset () {
   console.log('Reseting')
   currDirection = { x: 0, y: 0 } //starts and waits for a new direction
   // currDirection = directions.up //auto restart
-  head.x = blockSize * (boardCols / 2 - 1)
+  head.x = blockSize * (Math.floor(boardCols / 2) - 1)
   head.y = blockSize * (boardRows - 4)
   food_eated = []
   iteration = []
@@ -165,6 +183,7 @@ function reset () {
   scoreBoard.innerHTML = 'Score: ' + score
   gameSpeed = 1000 / sliderSpeed.value
   speedValueText.innerHTML = 'Speed: ' + sliderSpeed.value
+  drawBoardMessage('Press a button to Start')
   loop(gameSpeed)
 }
 
@@ -245,16 +264,15 @@ function update () {
       // AI next move
       agent()
     }
-    
   }
   loop(gameSpeed)
 }
 
 function gameOver () {
-  drawBoardText('Game Over')
+  drawBoardMessage('Game Over')
   setTimeout(() => {
     reset()
-  }, 4500)
+  }, 3000)
 }
 
 function winner () {
@@ -264,10 +282,10 @@ function winner () {
   scoreBoard.innerHTML = 'Score: ' + score
   food_eated.unshift(-1)
   drawSnakeBody()
-  drawBoardText('WINNER!')
+  drawBoardMessage('WINNER!')
   setTimeout(() => {
     reset()
-  }, 4500)
+  }, 3000)
 }
 
 /**Manual Movement of the Snake whit addEventListener*/
@@ -358,12 +376,15 @@ function pressArrows (arrow) {
   contextControls.stroke(arrow)
 }
 
-function toogleAIassistance (e) {
+function toogleAIassistance (update) {
   console.log('change swith')
-  a = document.querySelectorAll('.switch input').item(0)
-  if (switchOnOff.checked) {
-    switchOnOff.checked = false
-  } else {
-    switchOnOff.checked = true
+  if (update) {
+    a = document.querySelectorAll('.switch input').item(0)
+    if (switchOnOff.checked) {
+      switchOnOff.checked = false
+    } else {
+      switchOnOff.checked = true
+    }
   }
+  localStorage.setItem('AIAssist', switchOnOff.checked)
 }
