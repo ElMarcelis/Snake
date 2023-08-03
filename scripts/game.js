@@ -30,25 +30,23 @@ class Visited_blocks {
  * and computes the next move
  */
 async function agent () {
-  let tensorA = getState()
+  let tensorA = getGameState()
   // prepare feeds. use model input names as keys.
   const feeds = { input: tensorA }
-
   // feed inputs and run
-  const results = await session.run(feeds)
+  const results = await game.session.run(feeds)
   // console.log(JSON.stringify(results, null, 4));
   let next_move = [0, 0, 0]
   resutArray = Object.values(results.output.data)
-  let move = resutArray.indexOf(Math.max(...resutArray))
-  next_move[move] = 1
+  let idx = resutArray.indexOf(Math.max(...resutArray))
+  next_move[idx] = 1
   // console.log('next_move:', next_move)
-
   setNewDirection(next_move)
 }
 
 /**set the direction of the snake*/
 function setNewDirection (next_move) {
-  let idx = carrousel.indexOf(currDirection)
+  let idx = carrousel.indexOf(game.currDirection)
   // console.log('idx:', idx)
   let new_direction = 0
   let new_idx = 0
@@ -68,7 +66,7 @@ function setNewDirection (next_move) {
       console.log(' *************** ojo al piojo ***************')
       break
   }
-  currDirection = new_direction
+  game.currDirection = new_direction
 }
 
 function is_collision (pnt) {
@@ -77,22 +75,22 @@ function is_collision (pnt) {
     return true
   }
   // hits itself
-  if (isPointInArray(snakeBody.slice(0, -1), pnt)) {
+  if (isPointInArray(game.snakeBody.slice(0, -1), pnt)) {
     return true
   }
   return false
 }
 
 /** Gets the actual state of the enviroment */
-function getState () {
-  let point_l = new Point(head.x - blockSize, head.y)
-  let point_r = new Point(head.x + blockSize, head.y)
-  let point_u = new Point(head.x, head.y - blockSize)
-  let point_d = new Point(head.x, head.y + blockSize)
-  let dir_l = currDirection === directions.left
-  let dir_r = currDirection === directions.right
-  let dir_u = currDirection === directions.up
-  let dir_d = currDirection === directions.down
+function getGameState () {
+  const point_l = new Point(game.head.x - blockSize, game.head.y)
+  const point_r = new Point(game.head.x + blockSize, game.head.y)
+  const point_u = new Point(game.head.x, game.head.y - blockSize)
+  const point_d = new Point(game.head.x, game.head.y + blockSize)
+  const dir_l = game.currDirection === directions.left
+  const dir_r = game.currDirection === directions.right
+  const dir_u = game.currDirection === directions.up
+  const dir_d = game.currDirection === directions.down
 
   let tale_food_dist = tale_food_distance(point_l, point_r, point_u, point_d)
 
@@ -118,10 +116,10 @@ function getState () {
     dir_u, // 5
     dir_d, // 6
     // Food location
-    food.x < head.x, // food left
-    food.x > head.x, // food right
-    food.y < head.y, // food up
-    food.y > head.y, // food down
+    game.food.x < game.head.x, // food left
+    game.food.x > game.head.x, // food right
+    game.food.y < game.head.y, // food up
+    game.food.y > game.head.y, // food down
     // tale an food distance
     tale_food_dist[0], // cen
     tale_food_dist[1], // der
@@ -140,37 +138,44 @@ function tale_food_distance (point_l, point_r, point_u, point_d) {
   let points = [point_r, point_d, point_l, point_u]
   let searchTale = -1
 
-  if (isPointInArray(points, snakeBody.slice(-1)[0])) {
+  if (isPointInArray(points, game.snakeBody.slice(-1)[0])) {
     tale_near = true
   }
 
-  let idx_dir = carrousel.indexOf(currDirection)
+  let idx_dir = carrousel.indexOf(game.currDirection)
 
-  shift = new Point(currDirection.x * blockSize, currDirection.y * blockSize)
+  shift = new Point(
+    game.currDirection.x * blockSize,
+    game.currDirection.y * blockSize
+  )
 
   if (
     tale_near ||
     is_collision(points[idx_dir]) ||
     (isPointInArray(
-      snakeBody,
+      game.snakeBody,
       new Point(
         points[calcMod(idx_dir + 1, 4)].x + shift.x,
         points[calcMod(idx_dir + 1, 4)].y + shift.y
       )
     ) &&
-      isPointInArray(snakeBody.slice(0, -1), points[calcMod(idx_dir + 1, 4)]) ==
-        false) ||
+      isPointInArray(
+        game.snakeBody.slice(0, -1),
+        points[calcMod(idx_dir + 1, 4)]
+      ) == false) ||
     (isPointInArray(
-      snakeBody,
+      game.snakeBody,
       new Point(
         points[calcMod(idx_dir - 1, 4)].x + shift.x,
         points[calcMod(idx_dir - 1, 4)].y + shift.y
       )
     ) &&
-      isPointInArray(snakeBody.slice(0, -1), points[calcMod(idx_dir - 1, 4)]) ==
-        false)
+      isPointInArray(
+        game.snakeBody.slice(0, -1),
+        points[calcMod(idx_dir - 1, 4)]
+      ) == false)
   ) {
-    if (iterating) {
+    if (game.iterating) {
       searchTale = -2
     }
     while (true) {
@@ -250,7 +255,7 @@ function tale_food_distance (point_l, point_r, point_u, point_d) {
       return bestMove
     }
   }
-  if (iterating) {
+  if (game.iterating) {
     //especial movement when iterating
   }
   return [0, 0, 0]
@@ -262,13 +267,16 @@ function countBlocks (
   food_found,
   tale_found,
   idx,
-  searchTale) {
+  searchTale
+) {
   let freeSpace = 1
   let food_dist = Infinity
   let tale_dist = 0
   let row = point.y / blockSize
   let col = point.x / blockSize
-  if (JSON.stringify(snakeBody.slice(searchTale)[0]) == JSON.stringify(point)) {
+  if (
+    JSON.stringify(game.snakeBody.slice(searchTale)[0]) == JSON.stringify(point)
+  ) {
     // is the tale
     // console.log('Is tale')
     emptyRoom[idx] = 1
@@ -276,7 +284,7 @@ function countBlocks (
     tale_found[idx] = 1
     return
   }
-  if (isPointInArray(snakeBody, point)) {
+  if (isPointInArray(game.snakeBody, point)) {
     // is in body
     // console.log('Is in body')
     emptyRoom[idx] = 0
@@ -293,12 +301,12 @@ function countBlocks (
   }
 
   let visited = new Visited_blocks()
-  for (let index = 0; index < snakeBody.length; index++) {
-    c = snakeBody[index].x / blockSize
-    r = snakeBody[index].y / blockSize
+  for (let index = 0; index < game.snakeBody.length; index++) {
+    c = game.snakeBody[index].x / blockSize
+    r = game.snakeBody[index].y / blockSize
     visited.setVal(r, c, index + 2)
   }
-  if (point.x == food.x && point.y == food.y) {
+  if (point.x == game.food.x && point.y == game.food.y) {
     food_dist = 1
   }
 
@@ -314,9 +322,10 @@ function countBlocks (
       let c = ziparray[index][0]
       if (
         tale_dist == 0 &&
-        snakeBody.slice(searchTale)[0].x ==
+        game.snakeBody.slice(searchTale)[0].x ==
           (currBodyPart.col + c) * blockSize &&
-        snakeBody.slice(searchTale)[0].y == (currBodyPart.row + r) * blockSize      
+        game.snakeBody.slice(searchTale)[0].y ==
+          (currBodyPart.row + r) * blockSize
       ) {
         tale_dist = currBodyPart.distance
         freeSpace += 1
@@ -324,8 +333,8 @@ function countBlocks (
       if (isSafe(currBodyPart.row + r, currBodyPart.col + c, visited)) {
         if (
           food_dist == Infinity &&
-          food.x == (currBodyPart.col + c) * blockSize &&
-          food.y == (currBodyPart.row + r) * blockSize
+          game.food.x == (currBodyPart.col + c) * blockSize &&
+          game.food.y == (currBodyPart.row + r) * blockSize
         ) {
           food_dist = currBodyPart.distance
         }

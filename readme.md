@@ -71,5 +71,3 @@ Esto permite desplazar el espacio libre permintiendo nuevos caminos y aumentando
 ![2](https://github.com/ElMarcelis/Snake/assets/135712335/e4d777b7-a2e1-4407-bdea-7318ce02ce86)
 ![3](https://github.com/ElMarcelis/Snake/assets/135712335/eeb7496d-fa8e-4987-8a18-4565a4ea860e)
 
-
-pepe
