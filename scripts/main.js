@@ -118,8 +118,8 @@ window.onload = function () {
 function getAIAssistValue () {
   let AIAssistStorage = localStorage.getItem('AIAssist')
   if (AIAssistStorage == null) {
-    localStorage.setItem('AIAssist', true)
-    switchAI.checked = true
+    localStorage.setItem('AIAssist', false)
+    switchAI.checked = false
   } else {
     if (AIAssistStorage == 'true') {
       switchAI.checked = true
@@ -134,7 +134,7 @@ function getSpeedValue () {
   // localStorage.removeItem("speed")
   let gameSpeedStorage = localStorage.getItem('rangespeed')
   if (gameSpeedStorage == null) {
-    localStorage.setItem('rangespeed', parseInt(1000 / gameSpeed))
+    localStorage.setItem('rangespeed', parseInt(1000 / game.gameSpeed))
   } else {
     game.gameSpeed = 1000 / gameSpeedStorage
   }
