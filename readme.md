@@ -6,8 +6,6 @@ En el juego, el jugador controla a una serpiente, que vaga alrededor de un plano
 
 En esta versión se puede jugar de forma manual o automáticamente con la asistencia de la inteligencia artificial.
 
-La red neuronal está basada en el trabajo de: https://github.com/patrickloeber/snake-ai-pytorch.
-
 El modelo fue entrenado con “entrenamiento por refuerzo”, es una rama del aprendizaje automático(machine learning) que se basa en el concepto de aprendizaje mediante la interacción y la toma de decisiones en un ambiente o entorno específico. 
 La principal particularidad de este algoritmo es que no requiere datos etiquetados.
 
