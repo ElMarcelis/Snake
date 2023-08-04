@@ -34,7 +34,7 @@ async function agent () {
   // prepare feeds. use model input names as keys.
   const feeds = { input: tensorA }
   // feed inputs and run
-  const results = await game.session.run(feeds)
+  const results = await game.sessionORT.run(feeds)
   // console.log(JSON.stringify(results, null, 4));
   let next_move = [0, 0, 0]
   resutArray = Object.values(results.output.data)
@@ -75,7 +75,7 @@ function is_collision (pnt) {
     return true
   }
   // hits itself
-  if (isPointInArray(game.snakeBody.slice(0, -1), pnt)) {
+  if (isPointInArray(snakeBody.slice(0, -1), pnt)) {
     return true
   }
   return false
@@ -83,10 +83,10 @@ function is_collision (pnt) {
 
 /** Gets the actual state of the enviroment */
 function getGameState () {
-  const point_l = new Point(game.head.x - blockSize, game.head.y)
-  const point_r = new Point(game.head.x + blockSize, game.head.y)
-  const point_u = new Point(game.head.x, game.head.y - blockSize)
-  const point_d = new Point(game.head.x, game.head.y + blockSize)
+  const point_l = new Point(head.x - blockSize, head.y)
+  const point_r = new Point(head.x + blockSize, head.y)
+  const point_u = new Point(head.x, head.y - blockSize)
+  const point_d = new Point(head.x, head.y + blockSize)
   const dir_l = game.currDirection === directions.left
   const dir_r = game.currDirection === directions.right
   const dir_u = game.currDirection === directions.up
@@ -116,10 +116,10 @@ function getGameState () {
     dir_u, // 5
     dir_d, // 6
     // Food location
-    game.food.x < game.head.x, // food left
-    game.food.x > game.head.x, // food right
-    game.food.y < game.head.y, // food up
-    game.food.y > game.head.y, // food down
+    food.x < head.x, // food left
+    food.x > head.x, // food right
+    food.y < head.y, // food up
+    food.y > head.y, // food down
     // tale an food distance
     tale_food_dist[0], // cen
     tale_food_dist[1], // der
@@ -138,7 +138,7 @@ function tale_food_distance (point_l, point_r, point_u, point_d) {
   let points = [point_r, point_d, point_l, point_u]
   let searchTale = -1
 
-  if (isPointInArray(points, game.snakeBody.slice(-1)[0])) {
+  if (isPointInArray(points, snakeBody.slice(-1)[0])) {
     tale_near = true
   }
 
@@ -153,29 +153,25 @@ function tale_food_distance (point_l, point_r, point_u, point_d) {
     tale_near ||
     is_collision(points[idx_dir]) ||
     (isPointInArray(
-      game.snakeBody,
+      snakeBody,
       new Point(
         points[calcMod(idx_dir + 1, 4)].x + shift.x,
         points[calcMod(idx_dir + 1, 4)].y + shift.y
       )
     ) &&
-      isPointInArray(
-        game.snakeBody.slice(0, -1),
-        points[calcMod(idx_dir + 1, 4)]
-      ) == false) ||
+      isPointInArray(snakeBody.slice(0, -1), points[calcMod(idx_dir + 1, 4)]) ==
+        false) ||
     (isPointInArray(
-      game.snakeBody,
+      snakeBody,
       new Point(
         points[calcMod(idx_dir - 1, 4)].x + shift.x,
         points[calcMod(idx_dir - 1, 4)].y + shift.y
       )
     ) &&
-      isPointInArray(
-        game.snakeBody.slice(0, -1),
-        points[calcMod(idx_dir - 1, 4)]
-      ) == false)
+      isPointInArray(snakeBody.slice(0, -1), points[calcMod(idx_dir - 1, 4)]) ==
+        false)
   ) {
-    if (game.iterating) {
+    if (game.isIterating) {
       searchTale = -2
     }
     while (true) {
@@ -255,7 +251,7 @@ function tale_food_distance (point_l, point_r, point_u, point_d) {
       return bestMove
     }
   }
-  if (game.iterating) {
+  if (game.isIterating) {
     //especial movement when iterating
   }
   return [0, 0, 0]
@@ -274,9 +270,7 @@ function countBlocks (
   let tale_dist = 0
   let row = point.y / blockSize
   let col = point.x / blockSize
-  if (
-    JSON.stringify(game.snakeBody.slice(searchTale)[0]) == JSON.stringify(point)
-  ) {
+  if (JSON.stringify(snakeBody.slice(searchTale)[0]) == JSON.stringify(point)) {
     // is the tale
     // console.log('Is tale')
     emptyRoom[idx] = 1
@@ -284,7 +278,7 @@ function countBlocks (
     tale_found[idx] = 1
     return
   }
-  if (isPointInArray(game.snakeBody, point)) {
+  if (isPointInArray(snakeBody, point)) {
     // is in body
     // console.log('Is in body')
     emptyRoom[idx] = 0
@@ -301,12 +295,12 @@ function countBlocks (
   }
 
   let visited = new Visited_blocks()
-  for (let index = 0; index < game.snakeBody.length; index++) {
-    c = game.snakeBody[index].x / blockSize
-    r = game.snakeBody[index].y / blockSize
+  for (let index = 0; index < snakeBody.length; index++) {
+    c = snakeBody[index].x / blockSize
+    r = snakeBody[index].y / blockSize
     visited.setVal(r, c, index + 2)
   }
-  if (point.x == game.food.x && point.y == game.food.y) {
+  if (point.x == food.x && point.y == food.y) {
     food_dist = 1
   }
 
@@ -322,10 +316,9 @@ function countBlocks (
       let c = ziparray[index][0]
       if (
         tale_dist == 0 &&
-        game.snakeBody.slice(searchTale)[0].x ==
+        snakeBody.slice(searchTale)[0].x ==
           (currBodyPart.col + c) * blockSize &&
-        game.snakeBody.slice(searchTale)[0].y ==
-          (currBodyPart.row + r) * blockSize
+        snakeBody.slice(searchTale)[0].y == (currBodyPart.row + r) * blockSize
       ) {
         tale_dist = currBodyPart.distance
         freeSpace += 1
@@ -333,8 +326,8 @@ function countBlocks (
       if (isSafe(currBodyPart.row + r, currBodyPart.col + c, visited)) {
         if (
           food_dist == Infinity &&
-          game.food.x == (currBodyPart.col + c) * blockSize &&
-          game.food.y == (currBodyPart.row + r) * blockSize
+          food.x == (currBodyPart.col + c) * blockSize &&
+          food.y == (currBodyPart.row + r) * blockSize
         ) {
           food_dist = currBodyPart.distance
         }

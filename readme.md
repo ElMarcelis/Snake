@@ -8,12 +8,12 @@ En esta versión se puede jugar de forma manual o automáticamente con la asiste
 
 La red neuronal está basada en el trabajo de: https://github.com/patrickloeber/snake-ai-pytorch.
 
-El modelo fue entrenado con “entrenamiento por refuerzo”, un algoritmo de aprendizaje automático (machine learning). 
-La principal particularidad de este algoritmo es que no requiere datos etiquetados previamente.
+El modelo fue entrenado con “entrenamiento por refuerzo”, es una rama del aprendizaje automático(machine learning) que se basa en el concepto de aprendizaje mediante la interacción y la toma de decisiones en un ambiente o entorno específico. 
+La principal particularidad de este algoritmo es que no requiere datos etiquetados.
 
-Durante el entrenamiento, un agente de software explora un entorno desconocido y determina las acciones a llevar a cabo mediante prueba y error con el fin de maximizar la "recompensa".
+Durante el entrenamiento, un agente de software explora un entorno desconocido y determina las acciones a llevar a cabo mediante prueba y error con el fin de maximizar una "recompensa" acumulativa a lo largo del tiempo.
 
-En este caso el agente recibe recompensas cuando la víbora come las frutas y castigos por salirse de los límites del tablero o chocar contra su propio cuerpo.
+En este caso el agente recibe premios cuando la víbora come las frutas y castigos por salirse de los límites del tablero o chocar contra su propio cuerpo.
 
 El modelo consta de una capa de entrada de 14 neuronas que representan el entorno, una capa oculta y una capa de salida de 3 neuronas que indican si la víbora debe seguir adelante, doblar a la derecha o a la izquierda.
 
@@ -57,15 +57,15 @@ Por este motivo, el modelo puede predecir los efectos de una acción solamente e
 En algunas situaciones una acción puede tener efectos varios pasos en el futuro, dejando a la víbora encerrada.
 Para esos casos la mejor opción es que la cabeza siga a la cola (último bloque), ya que con cada movimiento de la víbora, la cola se desplaza dejando un espacio disponible hacia donde moverse.
 
-Se calcula la distancia y se indica si el camino más largo hasta la cola es: hacia delante, derecha o izquierda.
-Para ello se utilizan los últimos tres valores del array de entrada.
+Se calcula la distancia del camino menos directo hasta la cola y se indica si debe seguir: hacia delante, derecha o izquierda.
+Esta información se ingrese en los últimos tres valores del array de entrada.
 
 ![6](https://github.com/ElMarcelis/Snake/assets/135712335/0e5bc765-5ea7-4fd5-9e88-38da0fc14c14)
 ![7](https://github.com/ElMarcelis/Snake/assets/135712335/9aa261d6-9e40-4449-8fb3-42fe6296ca43)
 
-Por último en la etapa final, si queda uno o más espacios libres separados de la fruta, la víbora tiende a iterar, repitiendo una y otra vez el mismo camino.
-Cuando se detecta este comportamiento la solución es seguir, cuando sea posible, el bloque anterior al último.
-Esto permite desplazar el espacio libre permintiendo nuevos caminos y aumentando la posibilidad de completar el juego.
+Por último en la etapa final, si quedan uno o más espacios libres separados de la fruta, la víbora tiende a iterar, repitiendo una y otra vez el mismo camino.
+Cuando se detecta este comportamiento la solución es seguir, siempre que sea posible, al bloque anterior al último.
+Así se consigue desplazar el espacio libre permintiendo nuevos caminos y aumentando la posibilidad de completar el juego.
 
 ![1](https://github.com/ElMarcelis/Snake/assets/135712335/d9f96549-2e14-4f7c-a252-2b658c5f186d)
 ![2](https://github.com/ElMarcelis/Snake/assets/135712335/e4d777b7-a2e1-4407-bdea-7318ce02ce86)

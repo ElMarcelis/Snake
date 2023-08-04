@@ -1,11 +1,11 @@
 /**Randomly place food*/
 function newFoodPosition () {
   // console.log('newFoodPosition')
-  if (boardSize > game.snakeBody.length) {
+  if (boardSize > snakeBody.length) {
     while (true) {
-      game.food.x = Math.floor(Math.random() * boardCols) * blockSize
-      game.food.y = Math.floor(Math.random() * boardRows) * blockSize
-      if (isPointInArray(game.snakeBody, game.food)) {
+      food.x = Math.floor(Math.random() * boardCols) * blockSize
+      food.y = Math.floor(Math.random() * boardRows) * blockSize
+      if (isPointInArray(snakeBody, food)) {
         // food on snake body
       } else {
         break
@@ -20,26 +20,22 @@ function drawFood () {
   boardContext.fillStyle = 'red'
   boardContext.beginPath()
   boardContext.arc(
-    game.food.x + blockSize / 2,
-    game.food.y + blockSize / 2,
+    food.x + blockSize / 2,
+    food.y + blockSize / 2,
     blockSize / 2,
     0,
     2 * Math.PI
   )
   boardContext.fill()
 
-  drawReflection(
-    game.food.x + blockSize / 2,
-    game.food.y + blockSize / 2,
-    blockSize / 2
-  )
+  drawReflection(food.x + blockSize / 2, food.y + blockSize / 2, blockSize / 2)
 
   //leaf of the food
   boardContext.fillStyle = 'rgb(60 253 21)'
   boardContext.beginPath()
   boardContext.ellipse(
-    game.food.x + blockSize / 2,
-    game.food.y - blockSize / 6,
+    food.x + blockSize / 2,
+    food.y - blockSize / 6,
     blockSize / 6.5,
     blockSize / 18,
     Math.PI / 2,
@@ -83,43 +79,43 @@ function drawSnakeBody () {
   let minSize = 0.6
   let minMargin = 0.2
   let size
-  let variation = 255 / game.snakeBody.length
+  let variation = 255 / snakeBody.length
 
-  for (let i = 0; i < game.snakeBody.length; i++) {
+  for (let i = 0; i < snakeBody.length; i++) {
     let bodyPartColor = bodyColor(variation, i)
     size = 1 - i * 0.1
     if (i > 0) {
       //body part
       boardContext.fillStyle = bodyPartColor
       boardContext.fillRect(
-        game.snakeBody[i].x,
-        game.snakeBody[i].y,
+        snakeBody[i].x,
+        snakeBody[i].y,
         blockSize,
         blockSize
       )
       //body partcircle
       boardContext.fillStyle = circColor(variation, i)
-      if (game.snakeBody.length - i <= 3) {
+      if (snakeBody.length - i <= 3) {
         // Tale
         minSize -= 0.1
         minMargin += 0.05
         boardContext.fillStyle = 'rgb(253 83 21)'
         boardContext.fillRect(
-          game.snakeBody[i].x + blockSize * minMargin,
-          game.snakeBody[i].y + blockSize * minMargin,
+          snakeBody[i].x + blockSize * minMargin,
+          snakeBody[i].y + blockSize * minMargin,
           blockSize * minSize,
           blockSize * minSize
         )
       } else {
         // body (not tale)
-        if (game.food_eated.indexOf(i) >= 0) {
+        if (food_eated.indexOf(i) >= 0) {
           //food in the belly
           size = 1
         }
         boardContext.beginPath()
         boardContext.arc(
-          game.snakeBody[i].x + blockSize / 2,
-          game.snakeBody[i].y + blockSize / 2,
+          snakeBody[i].x + blockSize / 2,
+          snakeBody[i].y + blockSize / 2,
           (blockSize * Math.max(size, minSize)) / 2,
           0,
           2 * Math.PI
@@ -129,8 +125,8 @@ function drawSnakeBody () {
         if (size == 1) {
           //food in the belly
           drawReflection(
-            game.snakeBody[i].x + blockSize / 2,
-            game.snakeBody[i].y + blockSize / 2,
+            snakeBody[i].x + blockSize / 2,
+            snakeBody[i].y + blockSize / 2,
             blockSize / 2
           )
         }
@@ -145,7 +141,6 @@ function drawSnakeBody () {
 /** Draws the snake face, neck and eyes*/
 function drawSnakeHead () {
   // console.log('        Drawing head')
-
   let pupilSize = 0.14
   let irisSize = 0.2
   let eyeSeparation = 0
@@ -157,7 +152,7 @@ function drawSnakeHead () {
   let eyeRY
   let eyeLX
   let eyeLY
-  if (game.food_eated.length > 0 && game.food_eated[0] == -1) {
+  if (food_eated.length > 0 && food_eated[0] == -1) {
     //eating food
     pupilSize *= 1.7
     irisSize *= 1.5
@@ -170,8 +165,8 @@ function drawSnakeHead () {
       eyeRY = 0.3
       eyeLX = 0.7 + eyeSeparation
       eyeLY = 0.3
-      neckX = game.snakeBody[0].x
-      neckY = game.snakeBody[0].y + blockSize / 2
+      neckX = snakeBody[0].x
+      neckY = snakeBody[0].y + blockSize / 2
       neckWidth = blockSize
       neckHeight = blockSize / 2
       break
@@ -181,8 +176,8 @@ function drawSnakeHead () {
       eyeRY = 0.7
       eyeLX = 0.3 - eyeSeparation
       eyeLY = 0.7
-      neckX = game.snakeBody[0].x
-      neckY = game.snakeBody[0].y
+      neckX = snakeBody[0].x
+      neckY = snakeBody[0].y
       neckWidth = blockSize
       neckHeight = blockSize / 2
       break
@@ -192,8 +187,8 @@ function drawSnakeHead () {
       eyeRY = 0.7 + eyeSeparation
       eyeLX = 0.3
       eyeLY = 0.3 - eyeSeparation
-      neckX = game.snakeBody[0].x + blockSize / 2
-      neckY = game.snakeBody[0].y
+      neckX = snakeBody[0].x + blockSize / 2
+      neckY = snakeBody[0].y
       neckWidth = blockSize / 2
       neckHeight = blockSize
       break
@@ -203,8 +198,8 @@ function drawSnakeHead () {
       eyeRY = 0.3 - eyeSeparation
       eyeLX = 0.7
       eyeLY = 0.7 + eyeSeparation
-      neckX = game.snakeBody[0].x
-      neckY = game.snakeBody[0].y
+      neckX = snakeBody[0].x
+      neckY = snakeBody[0].y
       neckWidth = blockSize / 2
       neckHeight = blockSize
       break
@@ -214,8 +209,8 @@ function drawSnakeHead () {
       eyeRY = 0.3
       eyeLX = 0.7 + eyeSeparation
       eyeLY = 0.3
-      neckX = game.snakeBody[0].x
-      neckY = game.snakeBody[0].y + blockSize / 2
+      neckX = snakeBody[0].x
+      neckY = snakeBody[0].y + blockSize / 2
       neckWidth = blockSize
       neckHeight = blockSize / 2
       break
@@ -228,8 +223,8 @@ function drawSnakeHead () {
   boardContext.fillStyle = 'rgb(253 83 21)'
   boardContext.beginPath()
   boardContext.arc(
-    game.head.x + blockSize / 2,
-    game.head.y + blockSize / 2,
+    head.x + blockSize / 2,
+    head.y + blockSize / 2,
     blockSize / 2,
     0,
     2 * Math.PI
@@ -246,8 +241,8 @@ function drawEye (eyeX, eyeY, irisSize, pupilSize) {
   boardContext.fillStyle = 'rgb(247 244 22)'
   boardContext.beginPath()
   boardContext.arc(
-    game.head.x + blockSize * eyeX,
-    game.head.y + blockSize * eyeY,
+    head.x + blockSize * eyeX,
+    head.y + blockSize * eyeY,
     blockSize * irisSize,
     0,
     2 * Math.PI
@@ -258,8 +253,8 @@ function drawEye (eyeX, eyeY, irisSize, pupilSize) {
   boardContext.fillStyle = 'black'
   boardContext.beginPath()
   boardContext.arc(
-    game.head.x + blockSize * eyeX,
-    game.head.y + blockSize * eyeY,
+    head.x + blockSize * eyeX,
+    head.y + blockSize * eyeY,
     blockSize * pupilSize,
     0,
     2 * Math.PI
@@ -267,8 +262,8 @@ function drawEye (eyeX, eyeY, irisSize, pupilSize) {
   boardContext.fill()
 
   drawReflection(
-    game.head.x + blockSize * eyeX,
-    game.head.y + blockSize * eyeY,
+    head.x + blockSize * eyeX,
+    head.y + blockSize * eyeY,
     blockSize * irisSize
   )
 }

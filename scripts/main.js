@@ -9,18 +9,26 @@ class Point {
     }
   }
 }
+const directions = {
+  up: { x: 0, y: -1 },
+  down: { x: 0, y: 1 },
+  left: { x: -1, y: 0 },
+  right: { x: 1, y: 0 },
+  none: { x: 0, y: 0 }
+}
+const carrousel = [
+  directions.right,
+  directions.down,
+  directions.left,
+  directions.up
+]
 const game = {
-  gameSpeed: 1000 / 5, // 5 moves by second
+  gameSpeed: 1000 / 5, // 5 steps by second
   score: 0,
   neckColor: '',
-  iterationPath: [],
-  iterating: false,
-  head: new Point(0, 0),
-  food: new Point(0, 0),
-  food_eated: [],
-  currDirection: { x: 0, y: 0 },
-  snakeBody: [],
-  session: null
+  isIterating: false,
+  currDirection: directions.none,
+  sessionORT: null
 }
 
 // Set the total number of rows and columns
@@ -31,6 +39,13 @@ const boardCols = 8 //total column number
 const blockSize = Math.floor(
   (Math.min(window.innerHeight, window.innerWidth) * 0.94) / boardCols
 )
+
+const head = new Point(0, 0)
+const food = new Point(0, 0)
+
+const snakeBody = []
+const food_eated = []
+const iterationPath = []
 
 /** @type {HTMLCanvasElement} */
 const board = document.getElementById('board')
@@ -43,7 +58,6 @@ const boardContext = board.getContext('2d')
 
 /**  @type {HTMLInputElement}*/
 const switchAI = document.getElementById('cboxSwitch')
-
 const switchClass = document.getElementsByClassName('slider')
 
 /** @type {HTMLDivElement} */
@@ -55,19 +69,6 @@ controls.height = board.width / 2
 controls.width = board.width / 2
 /** @type {CanvasRenderingContext2D} */
 const controlsContext = controls.getContext('2d')
-
-const directions = {
-  up: { x: 0, y: -1 },
-  down: { x: 0, y: 1 },
-  left: { x: -1, y: 0 },
-  right: { x: 1, y: 0 }
-}
-const carrousel = [
-  directions.right,
-  directions.down,
-  directions.left,
-  directions.up
-]
 
 const modelUrl = './models/model.onnx'
 
@@ -101,17 +102,20 @@ window.onload = function () {
     })
     switchClass
       .item(0)
-      .addEventListener('pointerout', () => toogleAIassistance(true))
+      .addEventListener('pointerout', () => toogleAIassistance(switchAI, true))
   } else {
-    switchAI.addEventListener('click', () => toogleAIassistance(false))
+    switchAI.addEventListener('click', () =>
+      toogleAIassistance(switchAI, false)
+    )
   }
 
   sliderSpeed.addEventListener('input', changeSpeed)
 
-  getSpeedValue()
-  getAIAssistValue()
+  game.gameSpeed = getSpeedValue(game.gameSpeed)
+  sliderSpeed.value = game.gameSpeed
+  switchAI.checked = getAIAssistValue()
   drawControls()
-  createSession()
+  createSession(modelUrl)
 }
 
 /**Gets AI assist value from localStorage*/
@@ -119,26 +123,26 @@ function getAIAssistValue () {
   let AIAssistStorage = localStorage.getItem('AIAssist')
   if (AIAssistStorage == null) {
     localStorage.setItem('AIAssist', false)
-    switchAI.checked = false
+    return false
   } else {
     if (AIAssistStorage == 'true') {
-      switchAI.checked = true
+      return true
     } else {
-      switchAI.checked = false
+      return false
     }
   }
 }
 
 /**Gets speed value from localStorage*/
-function getSpeedValue () {
+function getSpeedValue (gameSpeed) {
   // localStorage.removeItem("speed")
   let gameSpeedStorage = localStorage.getItem('rangespeed')
   if (gameSpeedStorage == null) {
-    localStorage.setItem('rangespeed', parseInt(1000 / game.gameSpeed))
+    localStorage.setItem('rangespeed', parseInt(1000 / gameSpeed))
   } else {
-    game.gameSpeed = 1000 / gameSpeedStorage
+    gameSpeed = 1000 / gameSpeedStorage
   }
-  sliderSpeed.value = parseInt(1000 / game.gameSpeed)
+  return parseInt(1000 / gameSpeed)
 }
 
 function loop (time) {
@@ -146,11 +150,11 @@ function loop (time) {
 }
 
 /** Creates the session and load the model to inference */
-async function createSession () {
+async function createSession (modelUrl) {
   console.log('Creating session')
   try {
     // create a new session and load the specific model.
-    game.session = await ort.InferenceSession.create(modelUrl)
+    game.sessionORT = await ort.InferenceSession.create(modelUrl)
     console.log('Session created')
     reset()
   } catch (e) {
@@ -162,19 +166,21 @@ async function createSession () {
 /** Resets the game to initial conditions */
 function reset () {
   console.log('Reseting')
-  game.currDirection = { x: 0, y: 0 } //starts and waits for a new direction
+  game.currDirection = directions.none //starts and waits for a new direction
   // game.currDirection = directions.up //auto restart
-  game.head.x = blockSize * (Math.floor(boardCols / 2) - 1)
-  game.head.y = blockSize * (boardRows - 4)
-  game.food_eated = []
-  game.iterationPath = []
-  game.iterating = false
-  game.snakeBody = [
-    new Point([game.head.x, game.head.y]),
-    new Point([game.head.x, game.head.y + blockSize * 1]),
-    new Point([game.head.x, game.head.y + blockSize * 2]),
-    new Point([game.head.x, game.head.y + blockSize * 3])
+  head.x = blockSize * (Math.floor(boardCols / 2) - 1)
+  head.y = blockSize * (boardRows - 4)
+  food_eated.length = 0
+  iterationPath.length = 0
+  game.isIterating = false
+  snakeBody.length = 0
+  startBody = [
+    new Point([head.x, head.y]),
+    new Point([head.x, head.y + blockSize * 1]),
+    new Point([head.x, head.y + blockSize * 2]),
+    new Point([head.x, head.y + blockSize * 3])
   ]
+  snakeBody.push(...startBody)
   boardContext.fillStyle = boardBackColor
   boardContext.fillRect(0, 0, board.width, board.height)
   newFoodPosition()
@@ -192,47 +198,44 @@ function update () {
   // console.log('    Updating')
   if (game.currDirection.x != 0 || game.currDirection.y != 0) {
     // update eated food
-    for (let n = 0; n < game.food_eated.length; n++) {
-      game.food_eated[n] += 2
-      if (game.food_eated[n] > game.snakeBody.length - 2) {
-        game.food_eated.pop()
+    for (let n = 0; n < food_eated.length; n++) {
+      food_eated[n] += 2
+      if (food_eated[n] > snakeBody.length - 2) {
+        food_eated.pop()
       }
     }
 
-    game.head.x += game.currDirection.x * blockSize //updating Snake position in X coordinate.
-    game.head.y += game.currDirection.y * blockSize //updating Snake position in Y coordinate.
+    head.x += game.currDirection.x * blockSize //updating Snake position in X coordinate.
+    head.y += game.currDirection.y * blockSize //updating Snake position in Y coordinate.
 
-    game.snakeBody.unshift(new Point(game.head.x, game.head.y)) //moves the head to the next position
+    snakeBody.unshift(new Point(head.x, head.y)) //moves the head to the next position
 
-    if (boardSize == game.snakeBody.length) {
+    if (boardSize == snakeBody.length) {
       winner()
       return
     } else {
-      if (game.head.x == game.food.x && game.head.y == game.food.y) {
+      if (head.x == food.x && head.y == food.y) {
         //It´s eating food
-        game.iterationPath = []
-        game.iterating = false
+        iterationPath.length = 0
+        game.isIterating = false
         game.score += 1
         scoreText.innerHTML = 'Score: ' + game.score
-        game.food_eated.unshift(-1)
+        food_eated.unshift(-1)
         newFoodPosition()
       } else {
-        game.snakeBody.pop() //moves the tale
-        game.iterationPath.unshift(new Point(game.head.x, game.head.y))
-        if (game.iterationPath.length >= game.snakeBody.length * 2) {
+        snakeBody.pop() //moves the tale
+        iterationPath.unshift(new Point(head.x, head.y))
+        if (iterationPath.length >= snakeBody.length * 2) {
           if (
             JSON.stringify(
-              game.iterationPath.slice(
-                game.snakeBody.length,
-                2 * game.snakeBody.length
-              )
-            ) == JSON.stringify(game.snakeBody)
+              iterationPath.slice(snakeBody.length, 2 * snakeBody.length)
+            ) == JSON.stringify(snakeBody)
           ) {
             console.log('*************** iterating ***************')
-            game.iterating = true
+            game.isIterating = true
           }
         }
-        if (game.iterationPath.length >= game.snakeBody.length * 15) {
+        if (iterationPath.length >= snakeBody.length * 15) {
           gameOver()
           return
         }
@@ -246,21 +249,18 @@ function update () {
 
     // Check if head is Out of bound conditionv
     if (
-      game.head.x < 0 ||
-      game.head.x >= boardCols * blockSize ||
-      game.head.y < 0 ||
-      game.head.y >= boardRows * blockSize
+      head.x < 0 ||
+      head.x >= boardCols * blockSize ||
+      head.y < 0 ||
+      head.y >= boardRows * blockSize
     ) {
       console.log('Game Over board')
       gameOver()
       return
     }
     // Check if head is Snake eats own body
-    for (let i = 1; i < game.snakeBody.length; i++) {
-      if (
-        game.head.x == game.snakeBody[i].x &&
-        game.head.y == game.snakeBody[i].y
-      ) {
+    for (let i = 1; i < snakeBody.length; i++) {
+      if (head.x == snakeBody[i].x && head.y == snakeBody[i].y) {
         console.log('Game Over body')
         gameOver()
         return
@@ -287,7 +287,7 @@ function winner () {
   boardContext.fillRect(0, 0, board.width, board.height)
   game.score += 1
   scoreText.innerHTML = 'Score: ' + game.score
-  game.food_eated.unshift(-1)
+  food_eated.unshift(-1)
   drawSnakeBody()
   drawBoardMessage('WINNER!')
   setTimeout(() => {
@@ -299,25 +299,16 @@ function winner () {
 function changeDirection (e) {
   try {
     console.log('Changing Direction')
-    if (e.code == 'ArrowUp' && game.snakeBody[1].y != game.head.y - blockSize) {
+    if (e.code == 'ArrowUp' && snakeBody[1].y != head.y - blockSize) {
       pressArrow(arrowUp)
       game.currDirection = directions.up
-    } else if (
-      e.code == 'ArrowDown' &&
-      game.snakeBody[1].y != game.head.y + blockSize
-    ) {
+    } else if (e.code == 'ArrowDown' && snakeBody[1].y != head.y + blockSize) {
       pressArrow(arrowDown)
       game.currDirection = directions.down
-    } else if (
-      e.code == 'ArrowLeft' &&
-      game.snakeBody[1].x != game.head.x - blockSize
-    ) {
+    } else if (e.code == 'ArrowLeft' && snakeBody[1].x != head.x - blockSize) {
       pressArrow(arrowLeft)
       game.currDirection = directions.left
-    } else if (
-      e.code == 'ArrowRight' &&
-      game.snakeBody[1].x != game.head.x + blockSize
-    ) {
+    } else if (e.code == 'ArrowRight' && snakeBody[1].x != head.x + blockSize) {
       pressArrow(arrowRight)
       game.currDirection = directions.right
     }
@@ -380,15 +371,19 @@ function pressArrow (arrow) {
   controlsContext.stroke(arrow)
 }
 
-function toogleAIassistance (updateControl) {
+/**
+ * Toggles the control value and saves to localstorage
+ * @param {HTMLInputElement} switchControl - IA assist checkbox control
+ * @param {Boolean} updateControl - updates the checkbox?
+ */
+function toogleAIassistance (switchControl, updateControl) {
   console.log('change swith')
   if (updateControl) {
-    // a = document.querySelectorAll('.switch input').item(0)
-    if (switchAI.checked) {
-      switchAI.checked = false
+    if (switchControl.checked) {
+      switchControl.checked = false
     } else {
-      switchAI.checked = true
+      switchControl.checked = true
     }
   }
-  localStorage.setItem('AIAssist', switchAI.checked)
+  localStorage.setItem('AIAssist', switchControl.checked)
 }
