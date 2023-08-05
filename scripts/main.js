@@ -87,6 +87,10 @@ const sliderSpeed = document.getElementById('rangespeed')
 sliderSpeed.style.width = board.width * 0.5 + 'px'
 const speedValueText = document.getElementById('speedvalue')
 
+const biteSound = new Audio("./sounds/appleBite.mp3");
+const winnerSound = new Audio("./sounds/winner.mp3");
+
+
 window.onload = function () {
   controls.addEventListener('pointerdown', ButtonMousedown)
   controls.addEventListener('mouseup', resetArrows)
@@ -221,6 +225,7 @@ function update () {
         game.score += 1
         scoreText.innerHTML = 'Score: ' + game.score
         food_eated.unshift(-1)
+        playBite()
         newFoodPosition()
       } else {
         snakeBody.pop() //moves the tale
@@ -289,10 +294,11 @@ function winner () {
   scoreText.innerHTML = 'Score: ' + game.score
   food_eated.unshift(-1)
   drawSnakeBody()
+  playWinner()
   drawBoardMessage('WINNER!')
   setTimeout(() => {
     reset()
-  }, 3000)
+  }, 8000)
 }
 
 /**Manual Movement of the Snake with addEventListener*/

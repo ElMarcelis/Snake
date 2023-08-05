@@ -391,3 +391,11 @@ function zip (a, b) {
   })
   return c
 }
+
+function playBite() {
+  biteSound.play();
+}
+
+function playWinner() {
+  winnerSound.play();
+}
