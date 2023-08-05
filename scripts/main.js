@@ -220,12 +220,12 @@ function update () {
     } else {
       if (head.x == food.x && head.y == food.y) {
         //It´s eating food
+        playBite()
         iterationPath.length = 0
         game.isIterating = false
         game.score += 1
         scoreText.innerHTML = 'Score: ' + game.score
         food_eated.unshift(-1)
-        playBite()
         newFoodPosition()
       } else {
         snakeBody.pop() //moves the tale
