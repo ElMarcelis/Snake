@@ -89,7 +89,8 @@ const speedValueText = document.getElementById('speedvalue')
 
 const biteSound = new Audio("./sounds/appleBite.mp3");
 const winnerSound = new Audio("./sounds/winner.mp3");
-
+const slipSound = new Audio("./sounds/slip.mp3");
+const gameOverSound = new Audio("./sounds/gameOver.mp3");
 
 window.onload = function () {
   controls.addEventListener('pointerdown', ButtonMousedown)
@@ -220,7 +221,7 @@ function update () {
     } else {
       if (head.x == food.x && head.y == food.y) {
         //It´s eating food
-        playBite()
+        playSound(biteSound)
         iterationPath.length = 0
         game.isIterating = false
         game.score += 1
@@ -281,6 +282,7 @@ function update () {
 }
 
 function gameOver () {
+  playSound(gameOverSound)
   drawBoardMessage('Game Over')
   setTimeout(() => {
     reset()
@@ -294,7 +296,7 @@ function winner () {
   scoreText.innerHTML = 'Score: ' + game.score
   food_eated.unshift(-1)
   drawSnakeBody()
-  playWinner()
+  playSound(winnerSound)
   drawBoardMessage('WINNER!')
   setTimeout(() => {
     reset()

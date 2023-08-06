@@ -210,6 +210,7 @@ function tale_food_distance (point_l, point_r, point_u, point_d) {
           food_found[tale_found.indexOf(Math.max(...tale_found))] == Infinity
         ) {
           if (Math.random() > 0.33) {
+            playSound(slipSound)
             break
           }
         }
@@ -392,10 +393,6 @@ function zip (a, b) {
   return c
 }
 
-function playBite() {
-  biteSound.play();
-}
-
-function playWinner() {
-  winnerSound.play();
+function playSound(sound) {
+  sound.play();
 }
