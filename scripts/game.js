@@ -393,6 +393,11 @@ function zip (a, b) {
   return c
 }
 
-function playSound(sound) {
-  sound.play();
+function playSound (sound) {
+  try {
+    sound.play()  
+  } catch (error) {
+    console.log(error)
+  }
+
 }

@@ -87,12 +87,14 @@ const sliderSpeed = document.getElementById('rangespeed')
 sliderSpeed.style.width = board.width * 0.5 + 'px'
 const speedValueText = document.getElementById('speedvalue')
 
-const biteSound = new Audio("./sounds/appleBite.mp3");
-const winnerSound = new Audio("./sounds/winner.mp3");
-const slipSound = new Audio("./sounds/slip.mp3");
-const gameOverSound = new Audio("./sounds/gameOver.mp3");
+const biteSound = new Audio() //('./sounds/appleBite.mp3')
+const slipSound = new Audio() //('./sounds/slip.mp3')
+const gameOverSound = new Audio() // = new Audio('./sounds/gameOver.mp3')
+const winnerSound = new Audio() // = new Audio('./sounds/winner.mp3')
 
 window.onload = function () {
+  console.log('onload')
+
   controls.addEventListener('pointerdown', ButtonMousedown)
   controls.addEventListener('mouseup', resetArrows)
   controls.addEventListener('pointerleave', resetArrows)
@@ -121,6 +123,7 @@ window.onload = function () {
   switchAI.checked = getAIAssistValue()
   drawControls()
   createSession(modelUrl)
+  loadSounds()
 }
 
 /**Gets AI assist value from localStorage*/
@@ -166,6 +169,48 @@ async function createSession (modelUrl) {
     document.write(`failed to createSession ONNX: ${e}.`)
     console.log(e)
   }
+}
+
+async function loadSounds (params) {
+  console.log('loading sounds')
+
+  const miSonidoBite = new Audio()
+  // Utilizar una promesa para cargar el archivo
+  await new Promise((resolve, reject) => {
+    miSonidoBite.addEventListener('loadeddata', () => resolve())
+    miSonidoBite.addEventListener('error', () => reject())
+    miSonidoBite.src = './sounds/appleBite.mp3'
+  })
+  biteSound.src = miSonidoBite.src
+
+  const miSonidoSlip = new Audio()
+  // Utilizar una promesa para cargar el archivo
+  await new Promise((resolve, reject) => {
+    miSonidoSlip.addEventListener('loadeddata', () => resolve())
+    miSonidoSlip.addEventListener('error', () => reject())
+    miSonidoSlip.src = './sounds/slip.mp3'
+  })
+  slipSound.src = miSonidoSlip.src
+
+  const miSonidoGOver = new Audio()
+  // Utilizar una promesa para cargar el archivo
+  await new Promise((resolve, reject) => {
+    miSonidoGOver.addEventListener('loadeddata', () => resolve())
+    miSonidoGOver.addEventListener('error', () => reject())
+    miSonidoGOver.src = './sounds/gameOver.mp3'
+  })
+  gameOverSound.src = miSonidoGOver.src
+
+  const miSonidoWin = new Audio()
+  // Utilizar una promesa para cargar el archivo
+  await new Promise((resolve, reject) => {
+    miSonidoWin.addEventListener('loadeddata', () => resolve())
+    miSonidoWin.addEventListener('error', () => reject())
+    miSonidoWin.src = './sounds/winner.mp3'
+  })
+  winnerSound.src = miSonidoWin.src
+
+  console.log('sounds loaded')
 }
 
 /** Resets the game to initial conditions */
@@ -282,7 +327,12 @@ function update () {
 }
 
 function gameOver () {
-  playSound(gameOverSound)
+  try {
+    playSound(gameOverSound)
+  } catch (error) {
+    console.log(error)
+  }
+
   drawBoardMessage('Game Over')
   setTimeout(() => {
     reset()
@@ -296,7 +346,12 @@ function winner () {
   scoreText.innerHTML = 'Score: ' + game.score
   food_eated.unshift(-1)
   drawSnakeBody()
-  playSound(winnerSound)
+  try {
+    playSound(winnerSound)
+  } catch (error) {
+    console.log(error)
+  }
+
   drawBoardMessage('WINNER!')
   setTimeout(() => {
     reset()
