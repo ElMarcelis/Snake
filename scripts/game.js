@@ -395,9 +395,8 @@ function zip (a, b) {
 
 function playSound (sound) {
   try {
-    sound.play()  
+    sound.play()
   } catch (error) {
     console.log(error)
   }
-
 }

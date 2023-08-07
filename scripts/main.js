@@ -95,7 +95,7 @@ const winnerSound = new Audio() // = new Audio('./sounds/winner.mp3')
 window.onload = function () {
   console.log('onload')
 
-  controls.addEventListener('pointerdown', ButtonMousedown)
+  controls.addEventListener('pointerdown', buttonMousedown)
   controls.addEventListener('mouseup', resetArrows)
   controls.addEventListener('pointerleave', resetArrows)
 
@@ -122,8 +122,8 @@ window.onload = function () {
   sliderSpeed.value = game.gameSpeed
   switchAI.checked = getAIAssistValue()
   drawControls()
-  createSession(modelUrl)
   loadSounds()
+  createSession(modelUrl)
 }
 
 /**Gets AI assist value from localStorage*/
@@ -172,8 +172,7 @@ async function createSession (modelUrl) {
 }
 
 async function loadSounds (params) {
-  console.log('loading sounds')
-
+  console.log('loading biteSound')
   const miSonidoBite = new Audio()
   // Utilizar una promesa para cargar el archivo
   await new Promise((resolve, reject) => {
@@ -183,6 +182,7 @@ async function loadSounds (params) {
   })
   biteSound.src = miSonidoBite.src
 
+  console.log('loading slipSound')
   const miSonidoSlip = new Audio()
   // Utilizar una promesa para cargar el archivo
   await new Promise((resolve, reject) => {
@@ -192,6 +192,7 @@ async function loadSounds (params) {
   })
   slipSound.src = miSonidoSlip.src
 
+  console.log('loading gameOverSound')
   const miSonidoGOver = new Audio()
   // Utilizar una promesa para cargar el archivo
   await new Promise((resolve, reject) => {
@@ -201,6 +202,7 @@ async function loadSounds (params) {
   })
   gameOverSound.src = miSonidoGOver.src
 
+  console.log('loading winnerSound')
   const miSonidoWin = new Audio()
   // Utilizar una promesa para cargar el archivo
   await new Promise((resolve, reject) => {
@@ -327,12 +329,7 @@ function update () {
 }
 
 function gameOver () {
-  try {
-    playSound(gameOverSound)
-  } catch (error) {
-    console.log(error)
-  }
-
+  playSound(gameOverSound)
   drawBoardMessage('Game Over')
   setTimeout(() => {
     reset()
@@ -346,11 +343,7 @@ function winner () {
   scoreText.innerHTML = 'Score: ' + game.score
   food_eated.unshift(-1)
   drawSnakeBody()
-  try {
-    playSound(winnerSound)
-  } catch (error) {
-    console.log(error)
-  }
+  playSound(winnerSound)
 
   drawBoardMessage('WINNER!')
   setTimeout(() => {
@@ -380,7 +373,7 @@ function changeDirection (e) {
   }
 }
 
-function ButtonMousedown (e) {
+function buttonMousedown (e) {
   /** @type {CanvasRenderingContext2D} */
   let context = e.target.getContext('2d')
   let coordX =
