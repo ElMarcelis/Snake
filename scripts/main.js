@@ -39,7 +39,7 @@ const boardCols = 8 //total column number
 const blockSize = Math.floor(
   (Math.min(window.innerHeight, window.innerWidth) * 0.94) / boardCols
 )
-
+console.log("innerHeight",window.innerHeight,"innerWidth", window.innerWidth)
 const head = new Point(0, 0)
 const food = new Point(0, 0)
 
