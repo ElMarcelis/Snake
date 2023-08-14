@@ -28,7 +28,10 @@ const game = {
   neckColor: '',
   isIterating: false,
   currDirection: directions.none,
-  sessionORT: null
+  sessionORT: null,
+  stopLooping: false,
+  lastSession: 0
+  // currSession: 0
 }
 
 // Set the total number of rows and columns
@@ -39,7 +42,7 @@ const boardCols = 8 //total column number
 const blockSize = Math.floor(
   (Math.min(window.innerHeight, window.innerWidth) * 0.94) / boardCols
 )
-console.log("innerHeight",window.innerHeight,"innerWidth", window.innerWidth)
+console.log('innerHeight', window.innerHeight, 'innerWidth', window.innerWidth)
 const head = new Point(0, 0)
 const food = new Point(0, 0)
 
@@ -84,7 +87,7 @@ const arrowRight = new Path2D()
 
 /** @type {HTMLInputElement} */
 const sliderSpeed = document.getElementById('rangespeed')
-sliderSpeed.style.width = board.width * 0.5 + 'px'
+sliderSpeed.style.width = board.width * 0.6 + 'px'
 const speedValueText = document.getElementById('speedvalue')
 
 const biteSound = new Audio() //('./sounds/appleBite.mp3')
@@ -94,6 +97,35 @@ const winnerSound = new Audio() // = new Audio('./sounds/winner.mp3')
 
 window.onload = function () {
   console.log('onload')
+
+  const hamburgerMenu = document.querySelector('.hamburger-menu')
+  const menu = document.querySelector('.menu')
+
+  hamburgerMenu.addEventListener('click', function () {
+    console.log('click hamburgerMenu')
+    menu.classList.toggle('active')
+  })
+
+  /**@param {HTMLSelectElement} */
+  const menuExperience = document.getElementById('model_exp')
+  menuExperience.addEventListener('change', function () {
+    console.log('change menuExperience:', menuExperience.value)
+
+    createSession('./models/' + menuExperience.value + '.onnx')
+
+    menu.classList.remove('active')
+  })
+  menuExperience.addEventListener('click', function (ev) {
+    console.log('click menuExperience')
+    ev.stopPropagation()
+  })
+
+  const closeMenu = document.getElementById('close_menu')
+  closeMenu.addEventListener('click', function (ev) {
+    console.log('click closeMenu')
+    ev.stopPropagation()
+    menu.classList.remove('active')
+  })
 
   controls.addEventListener('pointerdown', buttonMousedown)
   controls.addEventListener('mouseup', resetArrows)
@@ -153,18 +185,22 @@ function getSpeedValue (gameSpeed) {
   return parseInt(1000 / gameSpeed)
 }
 
-function loop (time) {
-  window.setTimeout(update, parseInt(time))
+function loop (time, currSession) {
+  if (currSession == game.lastSession) {
+    window.setTimeout(update, parseInt(time), currSession)
+  }
 }
 
 /** Creates the session and load the model to inference */
 async function createSession (modelUrl) {
-  console.log('Creating session')
+  console.log('Creating session:', modelUrl)
   try {
     // create a new session and load the specific model.
+    game.sessionORT = null
     game.sessionORT = await ort.InferenceSession.create(modelUrl)
     console.log('Session created')
-    reset()
+    game.lastSession += 1
+    reset(game.lastSession)
   } catch (e) {
     document.write(`failed to createSession ONNX: ${e}.`)
     console.log(e)
@@ -216,8 +252,8 @@ async function loadSounds (params) {
 }
 
 /** Resets the game to initial conditions */
-function reset () {
-  console.log('Reseting')
+function reset (currSession) {
+  console.log('Reseting session:', currSession)
   game.currDirection = directions.none //starts and waits for a new direction
   // game.currDirection = directions.up //auto restart
   head.x = blockSize * (Math.floor(boardCols / 2) - 1)
@@ -243,11 +279,13 @@ function reset () {
   game.gameSpeed = 1000 / sliderSpeed.value
   speedValueText.innerHTML = 'Speed: ' + sliderSpeed.value
   drawBoardMessage('Press a button to Start')
-  loop(game.gameSpeed)
+  // if (currSession == game.lastSession) {
+  loop(game.gameSpeed, currSession)
+  // }
 }
 
-function update () {
-  // console.log('    Updating')
+function update (currSession) {
+  // console.log('    Updating; currSession:', currSession )
   if (game.currDirection.x != 0 || game.currDirection.y != 0) {
     // update eated food
     for (let n = 0; n < food_eated.length; n++) {
@@ -263,7 +301,7 @@ function update () {
     snakeBody.unshift(new Point(head.x, head.y)) //moves the head to the next position
 
     if (boardSize == snakeBody.length) {
-      winner()
+      winner(currSession)
       return
     } else {
       if (head.x == food.x && head.y == food.y) {
@@ -289,7 +327,7 @@ function update () {
           }
         }
         if (iterationPath.length >= snakeBody.length * 15) {
-          gameOver()
+          gameOver(currSession)
           return
         }
       }
@@ -308,35 +346,35 @@ function update () {
       head.y >= boardRows * blockSize
     ) {
       console.log('Game Over board')
-      gameOver()
+      gameOver(currSession)
       return
     }
     // Check if head is Snake eats own body
     for (let i = 1; i < snakeBody.length; i++) {
       if (head.x == snakeBody[i].x && head.y == snakeBody[i].y) {
         console.log('Game Over body')
-        gameOver()
+        gameOver(currSession)
         return
       }
     }
 
-    if (switchAI.checked) {
+    if (switchAI.checked && game.sessionORT != null) {
       // AI next move
       agent()
     }
   }
-  loop(game.gameSpeed)
+  loop(game.gameSpeed, currSession)
 }
 
-function gameOver () {
+function gameOver (currSession) {
   playSound(gameOverSound)
   drawBoardMessage('Game Over')
   setTimeout(() => {
-    reset()
+    reset(currSession)
   }, 3000)
 }
 
-function winner () {
+function winner (currSession) {
   boardContext.fillStyle = boardBackColor
   boardContext.fillRect(0, 0, board.width, board.height)
   game.score += 1
@@ -347,7 +385,7 @@ function winner () {
 
   drawBoardMessage('WINNER!')
   setTimeout(() => {
-    reset()
+    reset(currSession)
   }, 8000)
 }
 

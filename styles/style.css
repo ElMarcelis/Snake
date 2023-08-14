@@ -17,7 +17,7 @@ body {
 #controls {
   margin-top: 0px;
   padding: 20px;
-  padding-bottom: 12px;
+  padding-bottom: 14px;
   /* outline: rgb(228, 124, 5) 1px solid; */
 }
 #score {
@@ -61,6 +61,59 @@ body {
   margin: 0px;
   /* outline: rgb(248, 241, 246) 1px solid; */
 }
+
+.hamburger-menu {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 999; /* Para que esté por encima del contenido */
+  background-color: rgba(129, 11, 240, 0.534);
+  border-radius: 0%;
+  padding: 5px;
+  box-shadow: 0 0 50px rgba(37, 37, 35, 0.971);
+}
+
+.icon {
+  font-size: 30px;
+  cursor: pointer;
+  text-align: right;
+}
+
+.menu {
+  font-size: 25px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: none;
+}
+
+.menu li {
+  cursor: pointer;
+  padding: 2px;
+  text-align: left;
+  /* background-color: #000000; */
+}
+
+.menu li:hover {
+  color: #1eff00;
+}
+
+/* Mostrar el menú cuando se hace clic en el icono */
+.menu.active {
+  display: block;
+}
+
+#model_exp{
+  font-size: 25px;
+  color: white;
+  background-color: rgba(123, 7, 254, 0.534);
+}
+
+.exp_option{
+  background-color: rgba(112, 0, 250, 0.308);
+  color:#ffffff 
+}
+
 
 @media (orientation: landscape) {
   body {

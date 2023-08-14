@@ -30,18 +30,24 @@ class Visited_blocks {
  * and computes the next move
  */
 async function agent () {
-  let tensorA = getGameState()
-  // prepare feeds. use model input names as keys.
-  const feeds = { input: tensorA }
-  // feed inputs and run
-  const results = await game.sessionORT.run(feeds)
-  // console.log(JSON.stringify(results, null, 4));
-  let next_move = [0, 0, 0]
-  resutArray = Object.values(results.output.data)
-  let idx = resutArray.indexOf(Math.max(...resutArray))
-  next_move[idx] = 1
-  // console.log('next_move:', next_move)
-  setNewDirection(next_move)
+
+  try {
+    let tensorA = getGameState()
+    // prepare feeds. use model input names as keys.
+    const feeds = { input: tensorA }
+    // feed inputs and run
+    const results = await game.sessionORT.run(feeds)
+    // console.log(JSON.stringify(results, null, 4));
+    let next_move = [0, 0, 0]
+    resutArray = Object.values(results.output.data)
+    let idx = resutArray.indexOf(Math.max(...resutArray))
+    next_move[idx] = 1
+    // console.log('next_move:', next_move)
+    setNewDirection(next_move)    
+  } catch (error) {
+    console.log(error)
+  }
+
 }
 
 /**set the direction of the snake*/
@@ -205,15 +211,19 @@ function tale_food_distance (point_l, point_r, point_u, point_d) {
       if (searchTale == -1) {
         break
       } else {
+        //searching the block before tale
         if (
           Math.max(...tale_found) == 1 &&
           food_found[tale_found.indexOf(Math.max(...tale_found))] == Infinity
+          // the food isn't in the same direction thqan the block before tale
         ) {
           if (Math.random() > 0.33) {
+            //66% of the times follows the block before tale
             playSound(slipSound)
             break
           }
         }
+        //didn't find the block before tale, so search for the tale
         searchTale = -1
       }
     }
