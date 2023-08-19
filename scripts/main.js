@@ -110,9 +110,11 @@ window.onload = function () {
   const menuExperience = document.getElementById('model_exp')
   menuExperience.addEventListener('change', function () {
     console.log('change menuExperience:', menuExperience.value)
-
-    createSession('./models/' + menuExperience.value + '.onnx')
-
+    if (menuExperience.value=="") {
+      createSession('./models/model.onnx') 
+    }else{
+      createSession('./models/' + menuExperience.value + '.onnx')  
+    }
     menu.classList.remove('active')
   })
   menuExperience.addEventListener('click', function (ev) {
@@ -202,7 +204,7 @@ async function createSession (modelUrl) {
     game.lastSession += 1
     reset(game.lastSession)
   } catch (e) {
-    document.write(`failed to createSession ONNX: ${e}.`)
+    // document.write(`failed to createSession ONNX: ${e}.`)
     console.log(e)
   }
 }
@@ -253,35 +255,35 @@ async function loadSounds (params) {
 
 /** Resets the game to initial conditions */
 function reset (currSession) {
-  console.log('Reseting session:', currSession)
-  game.currDirection = directions.none //starts and waits for a new direction
-  // game.currDirection = directions.up //auto restart
-  head.x = blockSize * (Math.floor(boardCols / 2) - 1)
-  head.y = blockSize * (boardRows - 4)
-  food_eated.length = 0
-  iterationPath.length = 0
-  game.isIterating = false
-  snakeBody.length = 0
-  startBody = [
-    new Point([head.x, head.y]),
-    new Point([head.x, head.y + blockSize * 1]),
-    new Point([head.x, head.y + blockSize * 2]),
-    new Point([head.x, head.y + blockSize * 3])
-  ]
-  snakeBody.push(...startBody)
-  boardContext.fillStyle = boardBackColor
-  boardContext.fillRect(0, 0, board.width, board.height)
-  newFoodPosition()
-  drawFood()
-  drawSnakeBody()
-  game.score = 0
-  scoreText.innerHTML = 'Score: ' + game.score
-  game.gameSpeed = 1000 / sliderSpeed.value
-  speedValueText.innerHTML = 'Speed: ' + sliderSpeed.value
-  drawBoardMessage('Press a button to Start')
-  // if (currSession == game.lastSession) {
-  loop(game.gameSpeed, currSession)
-  // }
+  if (currSession == game.lastSession) {
+    console.log('Reseting session:', currSession)
+    game.currDirection = directions.none //starts and waits for a new direction
+    // game.currDirection = directions.up //auto restart
+    head.x = blockSize * (Math.floor(boardCols / 2) - 1)
+    head.y = blockSize * (boardRows - 4)
+    food_eated.length = 0
+    iterationPath.length = 0
+    game.isIterating = false
+    snakeBody.length = 0
+    startBody = [
+      new Point([head.x, head.y]),
+      new Point([head.x, head.y + blockSize * 1]),
+      new Point([head.x, head.y + blockSize * 2]),
+      new Point([head.x, head.y + blockSize * 3])
+    ]
+    snakeBody.push(...startBody)
+    boardContext.fillStyle = boardBackColor
+    boardContext.fillRect(0, 0, board.width, board.height)
+    newFoodPosition()
+    drawFood()
+    drawSnakeBody()
+    game.score = 0
+    scoreText.innerHTML = 'Score: ' + game.score
+    game.gameSpeed = 1000 / sliderSpeed.value
+    speedValueText.innerHTML = 'Speed: ' + sliderSpeed.value
+    drawBoardMessage('Press a button to Start')
+    loop(game.gameSpeed, currSession)
+  }
 }
 
 function update (currSession) {

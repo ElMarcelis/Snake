@@ -90,7 +90,7 @@ body {
 .menu li {
   cursor: pointer;
   padding: 2px;
-  text-align: left;
+  text-align: center;
   /* background-color: #000000; */
 }
 
@@ -107,14 +107,27 @@ body {
   font-size: 25px;
   color: white;
   background-color: rgba(123, 7, 254, 0.534);
+  margin-bottom: 20px;
+  padding: 5px;
+  border: solid 1px;
+  border-top: 1px;
 }
 
-.exp_option{
+#model_exp option {
+  background-color: rgba(123, 7, 254, 0.534);
+  text-align: center;
+  padding-right: 10px;
+}
+/* .exp_option{
   background-color: rgba(112, 0, 250, 0.308);
   color:#ffffff 
+} */
+
+#experience{
+  text-align: center;
+  border: solid 1px;
+  background-color: rgba(129, 11, 240, 0.534);
 }
-
-
 @media (orientation: landscape) {
   body {
     flex-direction: row;

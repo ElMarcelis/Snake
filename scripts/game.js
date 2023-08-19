@@ -217,11 +217,11 @@ function tale_food_distance (point_l, point_r, point_u, point_d) {
           food_found[tale_found.indexOf(Math.max(...tale_found))] == Infinity
           // the food isn't in the same direction thqan the block before tale
         ) {
-          if (Math.random() > 0.33) {
+          // if (Math.random() > 0.33) {
             //66% of the times follows the block before tale
             playSound(slipSound)
             break
-          }
+          // }
         }
         //didn't find the block before tale, so search for the tale
         searchTale = -1
