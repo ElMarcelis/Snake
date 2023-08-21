@@ -47,16 +47,27 @@ function drawFood () {
 
 /**Draws light reflection on the surface*/
 function drawReflection (centerX, centerY, radius) {
-  boardContext.fillStyle = 'white'
+  boardContext.fillStyle = "rgb(255 255 255 / 0.45)"//'white'
   boardContext.beginPath()
   boardContext.arc(
-    centerX - radius / 3.5,
-    centerY - radius / 3.5,
-    radius / 2.5,
+    centerX - radius / 3,
+    centerY - radius / 3,
+    radius / 2,
     0,
     2 * Math.PI
   )
   boardContext.fill()
+
+  boardContext.fillStyle = "rgb(255 255 255 / 0.82)"//'white'
+  boardContext.beginPath()
+  boardContext.arc(
+    centerX - radius / 2.4,
+    centerY - radius / 2.4,
+    radius / 3,
+    0,
+    2 * Math.PI
+  )
+  boardContext.fill()  
 }
 
 /** Color of body part */
